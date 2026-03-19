@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0">
-    <title>Screen TV - Smart Connect</title>
+    <title>Screen TV - ID Fixo & Agenda</title>
     <script src="https://unpkg.com/peerjs@1.4.7/dist/peerjs.min.js"></script>
     <link href="https://fonts.googleapis.com/css2?family=Exo+2:wght@400;700;900&family=Share+Tech+Mono&display=swap" rel="stylesheet">
     <style>
@@ -17,28 +17,24 @@
         
         #app{display:flex;flex-direction:column;height:100vh;max-width:800px;margin:0 auto;position:relative;z-index:1;}
         
-        /* Header com ID Automático */
         #hdr{display:flex;align-items:center;justify-content:space-between;padding:0 20px;height:70px;border-bottom:1px solid var(--bor);background:rgba(6,8,15,0.95);}
-        .logo-tx{font-weight:900;font-size:22px;color:var(--wh);}
-        .id-panel{background:var(--card);border:1px solid var(--cy);border-radius:10px;padding:8px 15px;text-align:right;}
+        .id-panel{background:var(--card);border:1px solid var(--cy);border-radius:10px;padding:8px 15px;cursor:pointer;}
         .id-label{font-size:9px;color:var(--cy);letter-spacing:1px;font-weight:700;}
         .id-val{font-family:'Share Tech Mono',monospace;font-size:20px;color:#fff;letter-spacing:2px;}
 
-        /* Tabs */
-        #tabs{display:flex;border-bottom:1px solid var(--bor);background:#0a0f1d;}
-        .tab{flex:1;padding:15px;text-align:center;cursor:pointer;font-weight:700;color:var(--tx2);transition:0.3s;}
+        #tabs{display:flex;background:#0a0f1d;}
+        .tab{flex:1;padding:15px;text-align:center;cursor:pointer;font-weight:700;color:var(--tx2);}
         .tab.on{color:var(--cy);border-bottom:3px solid var(--cy);background:rgba(0,229,255,0.05);}
 
-        /* Main */
-        #panels{flex:1;overflow-y:auto;padding:20px;}
+        #panels{flex:1;overflow-y:auto;padding:15px;}
         .pnl{display:none;} .pnl.on{display:block;}
 
-        .card{background:var(--card);border:1px solid var(--bor);border-radius:15px;padding:20px;margin-bottom:20px;}
+        .card{background:var(--card);border:1px solid var(--bor);border-radius:15px;padding:15px;margin-bottom:15px;}
         .pvw{width:100%;aspect-ratio:16/9;background:#000;border-radius:10px;overflow:hidden;border:1px solid var(--bor);display:flex;align-items:center;justify-content:center;position:relative;}
         video{width:100%;height:100%;object-fit:contain;}
         
-        .mctrl{display:grid;grid-template-columns:1fr 1fr;gap:10px;margin-top:15px;}
-        .btn{padding:12px;border:none;border-radius:8px;font-weight:700;cursor:pointer;display:flex;align-items:center;justify-content:center;gap:8px;transition:0.2s;}
+        .mctrl{display:grid;grid-template-columns:1fr 1fr;gap:10px;margin-top:10px;}
+        .btn{padding:12px;border:none;border-radius:8px;font-weight:700;cursor:pointer;display:flex;align-items:center;justify-content:center;gap:8px;}
         .btn-cy{background:var(--bl);color:#fff;}
         .btn-gh{background:var(--sur);border:1px solid var(--bor);color:var(--tx);}
         .btn-rd{background:rgba(255,45,85,0.1);border:1px solid var(--rd);color:var(--rd);}
@@ -46,25 +42,30 @@
         .connect-box{display:flex;gap:10px;margin-top:10px;}
         .inp{flex:1;padding:12px;background:#000;border:1px solid var(--bor);border-radius:8px;color:var(--cy);font-family:'Share Tech Mono',monospace;font-size:18px;text-align:center;}
         
-        .status-dot{width:10px;height:10px;border-radius:50%;display:inline-block;margin-right:5px;}
-        .online{background:var(--gr);box-shadow:0 0 10px var(--gr);}
+        /* Agenda de IDs */
+        .agenda-list{margin-top:10px;display:flex;flex-direction:column;gap:8px;}
+        .contact-item{background:var(--sur);padding:10px 15px;border-radius:8px;display:flex;justify-content:space-between;align-items:center;border:1px solid var(--bor);}
+        .contact-info{display:flex;flex-direction:column;}
+        .contact-id{font-family:'Share Tech Mono',monospace;color:var(--cy);font-size:14px;}
+        .contact-name{font-size:11px;color:var(--tx2);text-transform:uppercase;}
 
-        .slog{background:#000;padding:10px;height:80px;overflow-y:auto;font-family:'Share Tech Mono',monospace;font-size:11px;border-radius:8px;color:var(--tx2);margin-top:10px;}
+        .slog{background:#000;padding:10px;height:70px;overflow-y:auto;font-family:'Share Tech Mono',monospace;font-size:11px;border-radius:8px;color:var(--tx2);margin-top:10px;}
     </style>
 </head>
 <body>
 <div id="app">
     <div id="hdr">
-        <div><div class="logo-tx">SCREEN TV</div></div>
+        <div class="logo-tx">SCREEN TV</div>
         <div class="id-panel" onclick="copyMyID()">
-            <div class="id-label">MEU ID DE CONEXÃO</div>
-            <div class="id-val" id="my-id">GERANDO...</div>
+            <div class="id-label">MEU ID FIXO</div>
+            <div class="id-val" id="my-id">...</div>
         </div>
     </div>
 
     <div id="tabs">
-        <div class="tab on" data-target="p-send">ENVIAR SINAL</div>
-        <div class="tab" data-target="p-receive">RECEBER SINAL</div>
+        <div class="tab on" data-target="p-send">TRANSMITIR</div>
+        <div class="tab" data-target="p-receive">RECEBER</div>
+        <div class="tab" data-target="p-agenda">AGENDA</div>
     </div>
 
     <div id="panels">
@@ -72,22 +73,20 @@
             <div class="card">
                 <div class="pvw">
                     <video id="localVideo" autoplay playsinline muted></video>
-                    <div id="localOvl" style="position:absolute;">🎥 PRONTO PARA TRANSMITIR</div>
+                    <div id="localOvl" style="position:absolute;">🎥 PRONTO</div>
                 </div>
                 <div class="mctrl">
                     <button class="btn btn-cy" onclick="startCapture('screen')">📺 Tela</button>
                     <button class="btn btn-cy" onclick="startCapture('camera')">📷 Câmera</button>
-                    <button class="btn btn-gh" onclick="document.getElementById('fileInp').click()">🖼️ Galeria</button>
                     <button class="btn btn-rd" onclick="stopAll()">🛑 Parar</button>
                 </div>
-                <input type="file" id="fileInp" hidden accept="image/*,video/*" onchange="handleFile(event)">
             </div>
 
             <div class="card">
-                <div class="id-label" style="margin-bottom:10px">CONECTAR A OUTRA TV</div>
+                <div class="id-label">CONECTAR A NOVO DISPOSITIVO</div>
                 <div class="connect-box">
-                    <input type="text" id="remoteID" class="inp" placeholder="DIGITE O ID ALVO">
-                    <button class="btn btn-cy" style="padding:0 25px" onclick="connectToPeer()">CONECTAR</button>
+                    <input type="text" id="remoteID" class="inp" placeholder="DIGITE O ID">
+                    <button class="btn btn-cy" onclick="connectToPeer()">CONECTAR</button>
                 </div>
             </div>
         </div>
@@ -97,83 +96,109 @@
                 <div class="pvw">
                     <video id="remoteVideo" autoplay playsinline></video>
                     <div id="remoteOvl" style="position:absolute; text-align:center;">
-                        <div class="id-val">AGUARDANDO CONEXÃO</div>
-                        <p style="font-size:12px; color:var(--tx2)">Informe seu ID para o transmissor</p>
+                        <div class="id-val">AGUARDANDO</div>
                     </div>
                 </div>
             </div>
         </div>
 
-        <div class="slog" id="sysLog">> Screen TV iniciado.</div>
+        <div class="pnl" id="p-agenda">
+            <div class="card">
+                <div class="id-label">DISPOSITIVOS RECENTES</div>
+                <div class="agenda-list" id="agendaItems">
+                    </div>
+            </div>
+        </div>
+
+        <div class="slog" id="sysLog">> Pronto para conexão...</div>
     </div>
 </div>
 
 <script>
-// --- LÓGICA DO PEER (ID AUTOMÁTICO) ---
 let peer;
 let myId = "";
 let localStream;
+let savedIDs = JSON.parse(localStorage.getItem('screen_tv_agenda') || '[]');
 
-// Inicializa o PeerJS (Gera o ID automaticamente)
+// 1. GERAÇÃO E TRAVA DE ID ÚNICO
 function initPeer() {
-    // Gerando um ID aleatório de 6 números para facilitar
-    const randomId = Math.floor(100000 + Math.random() * 900000).toString();
-    peer = new Peer(randomId);
+    // Verifica se já existe um ID salvo no navegador do usuário
+    myId = localStorage.getItem('screen_tv_id');
+    
+    if (!myId) {
+        // Se não tiver, cria um novo e salva para sempre
+        myId = Math.floor(100000 + Math.random() * 900000).toString();
+        localStorage.setItem('screen_tv_id', myId);
+    }
+
+    peer = new Peer(myId);
 
     peer.on('open', (id) => {
-        myId = id;
         document.getElementById('my-id').innerText = id;
-        log("Seu ID está ativo: " + id);
+        log("ID Conectado e Fixo: " + id);
+        renderAgenda();
     });
 
-    // Quando alguém me liga (estou recebendo sinal)
     peer.on('call', (call) => {
-        log("Recebendo chamada de vídeo...");
-        call.answer(); // Atende a chamada
+        log("Recebendo transmissão...");
+        call.answer();
         call.on('stream', (remoteStream) => {
-            const rv = document.getElementById('remoteVideo');
-            rv.srcObject = remoteStream;
+            document.getElementById('remoteVideo').srcObject = remoteStream;
             document.getElementById('remoteOvl').style.display = "none";
         });
     });
-
-    peer.on('error', (err) => {
-        log("Erro: " + err.type, "var(--rd)");
-    });
 }
 
-// --- FUNÇÕES DE TRANSMISSÃO ---
+// 2. LÓGICA DE CONEXÃO E SALVAMENTO NA AGENDA
 async function startCapture(type) {
     try {
         localStream = (type === 'screen') 
-            ? await navigator.mediaDevices.getDisplayMedia({ video: true, audio: true })
+            ? await navigator.mediaDevices.getDisplayMedia({ video: true })
             : await navigator.mediaDevices.getUserMedia({ video: true, audio: true });
-        
         document.getElementById('localVideo').srcObject = localStream;
         document.getElementById('localOvl').style.display = "none";
-        log("Captura de " + type + " iniciada.");
-    } catch (e) {
-        log("Erro ao capturar: " + e.message, "var(--rd)");
+    } catch (e) { log("Erro: " + e.message); }
+}
+
+function connectToPeer(targetId = null) {
+    const id = targetId || document.getElementById('remoteID').value;
+    if (!id) return alert("Digite o ID!");
+    if (!localStream) return alert("Inicie a Tela/Câmera primeiro!");
+
+    log("Conectando ao ID: " + id);
+    const call = peer.call(id, localStream);
+    
+    // Salva na agenda se for um novo ID
+    if (!savedIDs.includes(id) && id !== myId) {
+        savedIDs.push(id);
+        localStorage.setItem('screen_tv_agenda', JSON.stringify(savedIDs));
+        renderAgenda();
     }
 }
 
-function connectToPeer() {
-    const targetId = document.getElementById('remoteID').value;
-    if (!targetId) return alert("Digite o ID do receptor!");
-    if (!localStream) return alert("Inicie a Tela ou Câmera antes de conectar!");
-
-    log("Tentando conectar ao ID: " + targetId);
-    const call = peer.call(targetId, localStream);
+// 3. RENDERIZAR AGENDA
+function renderAgenda() {
+    const container = document.getElementById('agendaItems');
+    container.innerHTML = savedIDs.length ? "" : "<p style='color:var(--tx2); font-size:12px;'>Nenhum dispositivo salvo.</p>";
     
-    call.on('stream', () => {
-        log("Transmissão estabelecida!", "var(--gr)");
+    savedIDs.forEach(id => {
+        const item = document.createElement('div');
+        item.className = 'contact-item';
+        item.innerHTML = `
+            <div class="contact-info">
+                <span class="contact-id">${id}</span>
+                <span class="contact-name">Dispositivo Salvo</span>
+            </div>
+            <button class="btn btn-gh" style="padding:5px 10px; font-size:10px;" onclick="connectToPeer('${id}')">CONECTAR</button>
+        `;
+        container.appendChild(item);
     });
 }
 
-// --- UTILITÁRIOS ---
-function log(msg, color = "") {
+// UTILITÁRIOS
+function log(msg) {
     const l = document.getElementById('sysLog');
-    l.innerHTML += `<div style="color:${color}">> ${msg}</div>`;
+    l.innerHTML += `<div>> ${msg}</div>`;
     l.scrollTop = l.scrollHeight;
 }
 
@@ -181,15 +206,13 @@ function stopAll() {
     if(localStream) localStream.getTracks().forEach(t => t.stop());
     document.getElementById('localVideo').srcObject = null;
     document.getElementById('localOvl').style.display = "flex";
-    log("Transmissão encerrada.");
 }
 
 function copyMyID() {
     navigator.clipboard.writeText(myId);
-    alert("ID Copiado: " + myId);
+    alert("Seu ID " + myId + " foi copiado!");
 }
 
-// Navegação de abas
 document.querySelectorAll('.tab').forEach(tab => {
     tab.onclick = () => {
         document.querySelectorAll('.tab, .pnl').forEach(el => el.classList.remove('on'));
@@ -201,4 +224,4 @@ document.querySelectorAll('.tab').forEach(tab => {
 window.onload = initPeer;
 </script>
 </body>
-  </html>
+</html>
