@@ -4,175 +4,66 @@
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0">
 <title>Screen TV</title>
+<link href="https://fonts.googleapis.com/css2?family=Exo+2:wght@300;400;600;700;900&family=Share+Tech+Mono&display=swap" rel="stylesheet">
 <style>
-@import url('https://fonts.googleapis.com/css2?family=Exo+2:wght@300;400;600;700;900&family=Share+Tech+Mono&display=swap');
-
 :root {
-  --bg: #06080f;
-  --surface: #0c1220;
-  --card: #101828;
-  --card2: #131f32;
-  --border: #1c2f50;
-  --border2: #243a60;
-  --cyan: #00e5ff;
-  --blue: #0057ff;
-  --green: #00ff9d;
-  --orange: #ff7b00;
-  --red: #ff2d55;
-  --purple: #bf5fff;
-  --text: #b8d0f0;
-  --text2: #5a7aa8;
-  --white: #e8f4ff;
-  --glow-c: rgba(0,229,255,0.15);
-  --glow-g: rgba(0,255,157,0.15);
+  --bg:#06080f;--surface:#0c1220;--card:#101828;--card2:#131f32;
+  --border:#1c2f50;--border2:#243a60;
+  --cyan:#00e5ff;--blue:#0057ff;--green:#00ff9d;
+  --orange:#ff7b00;--red:#ff2d55;--purple:#bf5fff;
+  --text:#b8d0f0;--text2:#5a7aa8;--white:#e8f4ff;
 }
-
 *{margin:0;padding:0;box-sizing:border-box;}
+html,body{background:var(--bg);font-family:'Exo 2',sans-serif;color:var(--text);height:100%;overflow:hidden;}
 
-html,body{
-  background:var(--bg);
-  font-family:'Exo 2',sans-serif;
-  color:var(--text);
-  height:100%;
-  overflow:hidden;
-}
-
-/* ── Animated BG ── */
-.bg-fx{
-  position:fixed;inset:0;pointer-events:none;z-index:0;
-  background:
-    radial-gradient(ellipse 60% 40% at 15% 50%, rgba(0,87,255,.06) 0%, transparent 70%),
-    radial-gradient(ellipse 50% 60% at 85% 30%, rgba(0,229,255,.05) 0%, transparent 70%);
-  animation:bgdrift 18s ease-in-out infinite alternate;
-}
+.bg-fx{position:fixed;inset:0;pointer-events:none;z-index:0;
+  background:radial-gradient(ellipse 60% 40% at 15% 50%,rgba(0,87,255,.06) 0%,transparent 70%),
+             radial-gradient(ellipse 50% 60% at 85% 30%,rgba(0,229,255,.05) 0%,transparent 70%);
+  animation:bgdrift 18s ease-in-out infinite alternate;}
 @keyframes bgdrift{from{opacity:1}to{opacity:.7;transform:scale(1.05);}}
+.grid-bg{position:fixed;inset:0;pointer-events:none;z-index:0;
+  background-image:linear-gradient(rgba(0,229,255,.025) 1px,transparent 1px),
+                   linear-gradient(90deg,rgba(0,229,255,.025) 1px,transparent 1px);
+  background-size:50px 50px;}
 
-.grid-bg{
-  position:fixed;inset:0;pointer-events:none;z-index:0;
-  background-image:
-    linear-gradient(rgba(0,229,255,.025) 1px,transparent 1px),
-    linear-gradient(90deg,rgba(0,229,255,.025) 1px,transparent 1px);
-  background-size:50px 50px;
-}
+.app{position:relative;z-index:1;display:grid;grid-template-rows:56px 1fr;height:100vh;max-width:1280px;margin:0 auto;}
 
-/* ── Layout ── */
-.app{
-  position:relative;z-index:1;
-  display:grid;
-  grid-template-rows:56px 1fr;
-  height:100vh;
-  max-width:1280px;
-  margin:0 auto;
-}
-
-/* ── Header ── */
-header{
-  display:flex;align-items:center;justify-content:space-between;
-  padding:0 20px;
-  border-bottom:1px solid var(--border);
-  background:rgba(6,8,15,.8);
-  backdrop-filter:blur(12px);
-}
-
-.logo{
-  display:flex;align-items:center;gap:12px;
-  font-family:'Exo 2',sans-serif;
-  font-weight:900;font-size:20px;letter-spacing:1px;
-}
-.logo-mark{
-  width:36px;height:36px;
-  background:linear-gradient(135deg,var(--blue),var(--cyan));
-  border-radius:10px;
-  display:flex;align-items:center;justify-content:center;
-  font-size:18px;
-  box-shadow:0 0 18px rgba(0,229,255,.35);
-}
-.logo-text{
-  background:linear-gradient(90deg,#fff 30%,var(--cyan));
-  -webkit-background-clip:text;-webkit-text-fill-color:transparent;
-}
+/* Header */
+header{display:flex;align-items:center;justify-content:space-between;padding:0 20px;border-bottom:1px solid var(--border);background:rgba(6,8,15,.85);backdrop-filter:blur(12px);}
+.logo{display:flex;align-items:center;gap:12px;font-family:'Exo 2',sans-serif;font-weight:900;font-size:20px;letter-spacing:1px;}
+.logo-mark{width:36px;height:36px;background:linear-gradient(135deg,var(--blue),var(--cyan));border-radius:10px;display:flex;align-items:center;justify-content:center;font-size:18px;box-shadow:0 0 18px rgba(0,229,255,.35);}
+.logo-text{background:linear-gradient(90deg,#fff 30%,var(--cyan));-webkit-background-clip:text;-webkit-text-fill-color:transparent;}
 .logo-sub{font-size:10px;font-weight:400;color:var(--text2);letter-spacing:3px;display:block;margin-top:-4px;font-family:'Share Tech Mono',monospace;}
-
-.my-id-badge{
-  display:flex;align-items:center;gap:10px;
-  background:var(--card);
-  border:1px solid var(--border);
-  border-radius:10px;
-  padding:6px 14px;
-  cursor:pointer;
-  transition:border-color .2s;
-}
+.my-id-badge{display:flex;align-items:center;gap:10px;background:var(--card);border:1px solid var(--border);border-radius:10px;padding:6px 14px;cursor:pointer;transition:border-color .2s;}
 .my-id-badge:hover{border-color:var(--cyan);}
 .my-id-badge .label{font-size:10px;color:var(--text2);letter-spacing:2px;font-family:'Share Tech Mono',monospace;}
-.my-id-badge .id-val{
-  font-family:'Share Tech Mono',monospace;font-size:18px;font-weight:700;
-  color:var(--cyan);letter-spacing:3px;
-}
+.my-id-badge .id-val{font-family:'Share Tech Mono',monospace;font-size:18px;font-weight:700;color:var(--cyan);letter-spacing:3px;}
 .copy-hint{font-size:10px;color:var(--text2);}
-
-.hdr-status{
-  display:flex;align-items:center;gap:8px;
-  font-family:'Share Tech Mono',monospace;font-size:11px;color:var(--text2);
-}
+.hdr-status{display:flex;align-items:center;gap:8px;font-family:'Share Tech Mono',monospace;font-size:11px;color:var(--text2);}
 .dot{width:8px;height:8px;border-radius:50%;background:var(--text2);transition:all .3s;}
 .dot.on{background:var(--green);box-shadow:0 0 8px var(--green);animation:blink 1.4s infinite;}
 .dot.scan{background:var(--cyan);box-shadow:0 0 8px var(--cyan);animation:blink .7s infinite;}
 .dot.err{background:var(--red);box-shadow:0 0 8px var(--red);}
 @keyframes blink{0%,100%{opacity:1}50%{opacity:.3}}
 
-/* ── Tabs ── */
+/* Tabs */
 .body-wrap{display:grid;grid-template-rows:auto 1fr;overflow:hidden;}
-.tabs{
-  display:flex;gap:2px;padding:10px 20px 0;
-  border-bottom:1px solid var(--border);
-  background:rgba(6,8,15,.6);
-}
-.tab{
-  padding:8px 18px;border-radius:8px 8px 0 0;
-  font-size:13px;font-weight:600;cursor:pointer;
-  color:var(--text2);border:1px solid transparent;border-bottom:none;
-  transition:all .2s;letter-spacing:.5px;
-  white-space:nowrap;
-}
-.tab.active{
-  background:var(--card);
-  border-color:var(--border);border-bottom-color:var(--card);
-  color:var(--white);margin-bottom:-1px;
-}
+.tabs{display:flex;gap:2px;padding:10px 20px 0;border-bottom:1px solid var(--border);background:rgba(6,8,15,.6);overflow-x:auto;}
+.tab{padding:8px 18px;border-radius:8px 8px 0 0;font-size:13px;font-weight:600;cursor:pointer;color:var(--text2);border:1px solid transparent;border-bottom:none;transition:all .2s;letter-spacing:.5px;white-space:nowrap;}
+.tab.active{background:var(--card);border-color:var(--border);border-bottom-color:var(--card);color:var(--white);margin-bottom:-1px;}
 .tab:hover:not(.active){color:var(--cyan);}
-
 .panels{overflow-y:auto;padding:20px;}
 .panel{display:none;}
 .panel.active{display:block;}
 
-/* ── Cards ── */
-.card{
-  background:var(--card);
-  border:1px solid var(--border);
-  border-radius:14px;
-  padding:20px;
-  position:relative;overflow:hidden;
-}
-.card::after{
-  content:'';position:absolute;top:0;left:0;right:0;height:1px;
-  background:linear-gradient(90deg,transparent,rgba(0,229,255,.4),transparent);
-}
-.card-title{
-  font-family:'Share Tech Mono',monospace;
-  font-size:10px;letter-spacing:3px;color:var(--text2);
-  text-transform:uppercase;margin-bottom:16px;
-  display:flex;align-items:center;gap:10px;
-}
+/* Cards */
+.card{background:var(--card);border:1px solid var(--border);border-radius:14px;padding:20px;position:relative;overflow:hidden;}
+.card::after{content:'';position:absolute;top:0;left:0;right:0;height:1px;background:linear-gradient(90deg,transparent,rgba(0,229,255,.4),transparent);}
+.card-title{font-family:'Share Tech Mono',monospace;font-size:10px;letter-spacing:3px;color:var(--text2);text-transform:uppercase;margin-bottom:16px;display:flex;align-items:center;gap:10px;}
 .card-title::after{content:'';flex:1;height:1px;background:var(--border);}
 
-/* ── Buttons ── */
-.btn{
-  padding:11px 18px;border:none;border-radius:9px;
-  font-family:'Exo 2',sans-serif;font-weight:700;font-size:13px;
-  cursor:pointer;transition:all .18s;letter-spacing:.5px;
-  display:inline-flex;align-items:center;gap:8px;
-  white-space:nowrap;
-}
+/* Buttons */
+.btn{padding:11px 18px;border:none;border-radius:9px;font-family:'Exo 2',sans-serif;font-weight:700;font-size:13px;cursor:pointer;transition:all .18s;letter-spacing:.5px;display:inline-flex;align-items:center;gap:8px;white-space:nowrap;}
 .btn-cyan{background:linear-gradient(135deg,var(--blue),var(--cyan));color:#fff;box-shadow:0 0 20px rgba(0,229,255,.25);}
 .btn-cyan:hover{box-shadow:0 0 30px rgba(0,229,255,.45);transform:translateY(-1px);}
 .btn-green{background:linear-gradient(135deg,#00b368,var(--green));color:#000;box-shadow:0 0 20px rgba(0,255,157,.2);}
@@ -189,69 +80,51 @@ header{
 .btn-full{width:100%;justify-content:center;}
 .btn-sm{padding:7px 12px;font-size:11px;}
 
-/* ── Input ── */
-.inp{
-  width:100%;padding:11px 14px;
-  background:var(--surface);
-  border:1px solid var(--border);border-radius:9px;
-  color:var(--white);font-family:'Exo 2',sans-serif;font-size:14px;
-  outline:none;transition:border-color .2s;
-}
+/* Inputs */
+.inp{width:100%;padding:11px 14px;background:var(--surface);border:1px solid var(--border);border-radius:9px;color:var(--white);font-family:'Exo 2',sans-serif;font-size:14px;outline:none;transition:border-color .2s;}
 .inp:focus{border-color:var(--cyan);}
 .inp::placeholder{color:var(--text2);}
-.inp-id{
-  font-family:'Share Tech Mono',monospace;font-size:22px;
-  letter-spacing:6px;text-align:center;
-}
 label.lbl{font-size:12px;color:var(--text2);display:block;margin-bottom:6px;letter-spacing:.5px;}
 
-/* ── Preview screen ── */
-.preview-wrap{
-  aspect-ratio:16/9;background:#000;
-  border-radius:10px;border:2px solid var(--border);
-  position:relative;overflow:hidden;margin-bottom:14px;
-}
+/* Preview */
+.preview-wrap{aspect-ratio:16/9;background:#000;border-radius:10px;border:2px solid var(--border);position:relative;overflow:hidden;margin-bottom:14px;}
 .preview-wrap video{width:100%;height:100%;object-fit:contain;}
-.preview-overlay{
-  position:absolute;inset:0;
-  display:flex;flex-direction:column;align-items:center;justify-content:center;gap:10px;
-  background:rgba(0,0,0,.7);transition:opacity .3s;
-}
+.preview-overlay{position:absolute;inset:0;display:flex;flex-direction:column;align-items:center;justify-content:center;gap:10px;background:rgba(0,0,0,.7);transition:opacity .3s;}
 .preview-overlay.gone{opacity:0;pointer-events:none;}
 .preview-icon{font-size:52px;opacity:.3;}
 .preview-overlay p{font-size:13px;color:var(--text2);text-align:center;}
 
-/* ── Radar ── */
-.radar-box{display:flex;flex-direction:column;align-items:center;gap:14px;}
-.radar{width:150px;height:150px;position:relative;flex-shrink:0;}
-.r-ring{position:absolute;border:1px solid rgba(0,229,255,.12);border-radius:50%;top:50%;left:50%;transform:translate(-50%,-50%);}
-.r-ring:nth-child(1){width:38px;height:38px;}
-.r-ring:nth-child(2){width:76px;height:76px;}
-.r-ring:nth-child(3){width:114px;height:114px;}
-.r-ring:nth-child(4){width:150px;height:150px;}
-.r-sweep{
-  position:absolute;top:50%;left:50%;
-  width:75px;height:75px;margin:-75px 0 0 0;
-  transform-origin:bottom center;
-  background:conic-gradient(from 0deg,transparent 65%,rgba(0,229,255,.55) 100%);
-  border-radius:50% 50% 0 0/100% 100% 0 0;
-  display:none;
-}
-.r-sweep.go{display:block;animation:rsweep 2s linear infinite;}
-@keyframes rsweep{from{transform:rotate(0)}to{transform:rotate(360deg)}}
-.r-center{position:absolute;top:50%;left:50%;transform:translate(-50%,-50%);width:8px;height:8px;background:var(--cyan);border-radius:50%;box-shadow:0 0 10px var(--cyan);}
-.r-blip{position:absolute;width:10px;height:10px;background:var(--green);border-radius:50%;transform:translate(-50%,-50%);box-shadow:0 0 8px var(--green);animation:rblip 1s infinite;display:none;}
-@keyframes rblip{0%,100%{opacity:1;transform:translate(-50%,-50%) scale(1)}50%{opacity:.4;transform:translate(-50%,-50%) scale(1.6)}}
+/* Progress */
+.prog-wrap{margin:8px 0;}
+.prog-labels{display:flex;justify-content:space-between;font-size:11px;color:var(--text2);margin-bottom:5px;font-family:'Share Tech Mono',monospace;}
+.prog-bar{height:3px;background:var(--border);border-radius:2px;overflow:hidden;cursor:pointer;}
+.prog-fill{height:100%;background:linear-gradient(90deg,var(--blue),var(--cyan));border-radius:2px;transition:width .1s;box-shadow:0 0 6px var(--cyan);width:0%;}
 
-/* ── Device list ── */
+/* Stats */
+.stats-g{display:grid;grid-template-columns:repeat(4,1fr);gap:8px;}
+.stat-b{background:var(--surface);border:1px solid var(--border);border-radius:8px;padding:10px;text-align:center;}
+.stat-v{font-family:'Share Tech Mono',monospace;font-size:18px;color:var(--cyan);font-weight:700;}
+.stat-l{font-size:9px;color:var(--text2);letter-spacing:2px;margin-top:2px;text-transform:uppercase;}
+
+/* Media controls */
+.media-ctrl{display:flex;gap:8px;justify-content:center;flex-wrap:wrap;margin:10px 0;}
+.m-btn{width:44px;height:44px;border-radius:8px;background:var(--surface);border:1px solid var(--border);color:var(--text);font-size:18px;cursor:pointer;transition:all .18s;display:flex;align-items:center;justify-content:center;}
+.m-btn:hover{border-color:var(--cyan);color:var(--cyan);}
+.vol-wrap{display:flex;align-items:center;gap:10px;font-size:16px;}
+input[type=range]{flex:1;-webkit-appearance:none;height:3px;background:var(--border);border-radius:2px;outline:none;}
+input[type=range]::-webkit-slider-thumb{-webkit-appearance:none;width:14px;height:14px;background:var(--cyan);border-radius:50%;cursor:pointer;box-shadow:0 0 6px var(--cyan);}
+
+/* Drop zone */
+.drop-z{border:2px dashed var(--border);border-radius:10px;padding:22px;text-align:center;cursor:pointer;position:relative;transition:all .2s;}
+.drop-z:hover,.drop-z.drag{border-color:var(--cyan);background:rgba(0,229,255,.03);}
+.drop-z input[type=file]{position:absolute;inset:0;opacity:0;cursor:pointer;width:100%;height:100%;}
+.drop-z .di{font-size:28px;margin-bottom:8px;}
+.drop-z p{font-size:13px;color:var(--text2);}
+.drop-z strong{color:var(--cyan);}
+
+/* Device list */
 .dev-list{display:flex;flex-direction:column;gap:8px;min-height:60px;}
-.dev-item{
-  display:flex;align-items:center;gap:12px;
-  padding:12px 14px;
-  background:var(--surface);border:1px solid var(--border);border-radius:10px;
-  cursor:pointer;transition:all .18s;
-  animation:fadeSlide .3s ease;
-}
+.dev-item{display:flex;align-items:center;gap:12px;padding:12px 14px;background:var(--surface);border:1px solid var(--border);border-radius:10px;cursor:pointer;transition:all .18s;animation:fadeSlide .3s ease;}
 @keyframes fadeSlide{from{opacity:0;transform:translateX(-8px)}to{opacity:1;transform:translateX(0)}}
 .dev-item:hover{border-color:var(--cyan);background:rgba(0,229,255,.04);transform:translateX(3px);}
 .dev-item.connected{border-color:var(--green);background:rgba(0,255,157,.04);}
@@ -270,157 +143,91 @@ label.lbl{font-size:12px;color:var(--text2);display:block;margin-bottom:6px;lett
 .badge-o{color:var(--orange);border-color:var(--orange);background:rgba(255,123,0,.1);}
 .no-dev{text-align:center;padding:24px;color:var(--text2);font-size:13px;}
 
-/* ── Progress / stats ── */
-.prog-wrap{margin:8px 0;}
-.prog-labels{display:flex;justify-content:space-between;font-size:11px;color:var(--text2);margin-bottom:5px;font-family:'Share Tech Mono',monospace;}
-.prog-bar{height:3px;background:var(--border);border-radius:2px;overflow:hidden;}
-.prog-fill{height:100%;background:linear-gradient(90deg,var(--blue),var(--cyan));border-radius:2px;transition:width .1s;box-shadow:0 0 6px var(--cyan);width:0%;}
-
-.stats-g{display:grid;grid-template-columns:repeat(4,1fr);gap:8px;}
-.stat-b{background:var(--surface);border:1px solid var(--border);border-radius:8px;padding:10px;text-align:center;}
-.stat-v{font-family:'Share Tech Mono',monospace;font-size:18px;color:var(--cyan);font-weight:700;}
-.stat-l{font-size:9px;color:var(--text2);letter-spacing:2px;margin-top:2px;text-transform:uppercase;}
-
-/* ── Media controls ── */
-.media-ctrl{display:flex;gap:8px;justify-content:center;flex-wrap:wrap;margin:10px 0;}
-.m-btn{width:44px;height:44px;border-radius:8px;background:var(--surface);border:1px solid var(--border);color:var(--text);font-size:18px;cursor:pointer;transition:all .18s;display:flex;align-items:center;justify-content:center;}
-.m-btn:hover{border-color:var(--cyan);color:var(--cyan);}
-.vol-wrap{display:flex;align-items:center;gap:10px;font-size:16px;}
-input[type=range]{flex:1;-webkit-appearance:none;height:3px;background:var(--border);border-radius:2px;outline:none;}
-input[type=range]::-webkit-slider-thumb{-webkit-appearance:none;width:14px;height:14px;background:var(--cyan);border-radius:50%;cursor:pointer;box-shadow:0 0 6px var(--cyan);}
-
-/* ── Drop zone ── */
-.drop-z{
-  border:2px dashed var(--border);border-radius:10px;
-  padding:22px;text-align:center;cursor:pointer;position:relative;transition:all .2s;
-}
-.drop-z:hover,.drop-z.drag{border-color:var(--cyan);background:rgba(0,229,255,.03);}
-.drop-z input{position:absolute;inset:0;opacity:0;cursor:pointer;}
-.drop-z .di{font-size:28px;margin-bottom:8px;}
-.drop-z p{font-size:13px;color:var(--text2);}
-.drop-z strong{color:var(--cyan);}
-
-/* ── IPTV ── */
-.iptv-channel{
-  display:flex;align-items:center;gap:12px;
-  padding:10px 14px;background:var(--surface);
-  border:1px solid var(--border);border-radius:9px;
-  cursor:pointer;transition:all .18s;
-  animation:fadeSlide .25s ease;
-}
-.iptv-channel:hover{border-color:var(--purple);background:rgba(191,95,255,.05);}
-.iptv-channel.playing{border-color:var(--green);}
-.iptv-ico{width:38px;height:38px;background:var(--card);border-radius:7px;display:flex;align-items:center;justify-content:center;font-size:18px;flex-shrink:0;}
-.iptv-name{flex:1;font-size:13px;font-weight:600;color:var(--white);}
-.iptv-cat{font-size:10px;color:var(--text2);font-family:'Share Tech Mono',monospace;}
-.ch-list{display:flex;flex-direction:column;gap:7px;max-height:340px;overflow-y:auto;padding-right:4px;}
+/* IPTV */
+.ch-list{display:flex;flex-direction:column;gap:7px;max-height:400px;overflow-y:auto;padding-right:4px;}
 .ch-list::-webkit-scrollbar{width:4px;}
 .ch-list::-webkit-scrollbar-track{background:var(--surface);}
 .ch-list::-webkit-scrollbar-thumb{background:var(--border);border-radius:2px;}
+.iptv-channel{display:flex;align-items:center;gap:12px;padding:10px 14px;background:var(--surface);border:1px solid var(--border);border-radius:9px;cursor:pointer;transition:all .18s;animation:fadeSlide .25s ease;}
+.iptv-channel:hover{border-color:var(--purple);background:rgba(191,95,255,.05);}
+.iptv-channel.playing{border-color:var(--green);background:rgba(0,255,157,.04);}
+.iptv-ico{width:38px;height:38px;background:var(--card);border-radius:7px;display:flex;align-items:center;justify-content:center;font-size:18px;flex-shrink:0;overflow:hidden;}
+.iptv-ico img{width:100%;height:100%;object-fit:contain;}
+.iptv-name{flex:1;font-size:13px;font-weight:600;color:var(--white);}
+.iptv-cat{font-size:10px;color:var(--text2);font-family:'Share Tech Mono',monospace;margin-top:2px;}
 .tag{font-size:9px;padding:2px 8px;border-radius:12px;border:1px solid;font-family:'Share Tech Mono',monospace;}
 .tag-live{color:var(--red);border-color:var(--red);background:rgba(255,45,85,.1);animation:tagblink 1.5s infinite;}
 @keyframes tagblink{0%,100%{opacity:1}50%{opacity:.5}}
 
-/* ── ID Connect Panel ── */
-.id-connect-wrap{
-  display:grid;grid-template-columns:1fr 1fr;gap:20px;
-}
-.id-card{
-  background:linear-gradient(135deg,var(--card),var(--card2));
-  border:1px solid var(--border);border-radius:14px;
-  padding:24px;text-align:center;position:relative;overflow:hidden;
-}
-.id-card::before{
-  content:'';position:absolute;inset:0;
-  background:radial-gradient(ellipse at top,rgba(0,229,255,.06) 0%,transparent 70%);
-}
-.id-big{
-  font-family:'Share Tech Mono',monospace;
-  font-size:38px;font-weight:700;
-  color:var(--cyan);letter-spacing:6px;
-  text-shadow:0 0 20px rgba(0,229,255,.4);
-  margin:12px 0;
-}
-.id-card h3{font-size:13px;color:var(--text2);letter-spacing:2px;text-transform:uppercase;margin-bottom:4px;}
+/* Filter bar */
+.filter-bar{display:flex;gap:8px;margin-bottom:14px;flex-wrap:wrap;}
+.filt-btn{padding:5px 14px;border-radius:20px;border:1px solid var(--border);background:var(--surface);color:var(--text2);font-size:11px;font-family:'Share Tech Mono',monospace;cursor:pointer;transition:all .2s;white-space:nowrap;}
+.filt-btn.active{border-color:var(--cyan);color:var(--cyan);background:rgba(0,229,255,.08);}
+.filt-btn:hover:not(.active){border-color:var(--border2);color:var(--text);}
 
-.peer-list{display:flex;flex-direction:column;gap:8px;margin-top:12px;}
-.peer-item{
-  display:flex;align-items:center;gap:10px;
-  padding:10px 12px;background:var(--surface);
-  border:1px solid var(--border);border-radius:9px;font-size:13px;
-}
-.peer-item.you{border-color:var(--green);}
-.peer-dot{width:8px;height:8px;border-radius:50%;background:var(--text2);flex-shrink:0;}
-.peer-dot.on{background:var(--green);box-shadow:0 0 6px var(--green);}
-.peer-name{flex:1;font-weight:600;color:var(--white);}
-.peer-id{font-family:'Share Tech Mono',monospace;font-size:11px;color:var(--text2);}
+/* Radar */
+.radar-box{display:flex;flex-direction:column;align-items:center;gap:14px;}
+.radar{width:150px;height:150px;position:relative;flex-shrink:0;}
+.r-ring{position:absolute;border:1px solid rgba(0,229,255,.12);border-radius:50%;top:50%;left:50%;transform:translate(-50%,-50%);}
+.r-ring:nth-child(1){width:38px;height:38px;}.r-ring:nth-child(2){width:76px;height:76px;}.r-ring:nth-child(3){width:114px;height:114px;}.r-ring:nth-child(4){width:150px;height:150px;}
+.r-sweep{position:absolute;top:50%;left:50%;width:75px;height:75px;margin:-75px 0 0 0;transform-origin:bottom center;background:conic-gradient(from 0deg,transparent 65%,rgba(0,229,255,.55) 100%);border-radius:50% 50% 0 0/100% 100% 0 0;display:none;}
+.r-sweep.go{display:block;animation:rsweep 2s linear infinite;}
+@keyframes rsweep{from{transform:rotate(0)}to{transform:rotate(360deg)}}
+.r-center{position:absolute;top:50%;left:50%;transform:translate(-50%,-50%);width:8px;height:8px;background:var(--cyan);border-radius:50%;box-shadow:0 0 10px var(--cyan);}
+.r-blip{position:absolute;width:10px;height:10px;background:var(--green);border-radius:50%;transform:translate(-50%,-50%);box-shadow:0 0 8px var(--green);animation:rblip 1s infinite;display:none;}
+@keyframes rblip{0%,100%{opacity:1;transform:translate(-50%,-50%) scale(1)}50%{opacity:.4;transform:translate(-50%,-50%) scale(1.6)}}
 
-/* ── Log ── */
-.sys-log{
-  background:#000;border:1px solid var(--border);border-radius:8px;
-  padding:10px;height:90px;overflow-y:auto;
-  font-family:'Share Tech Mono',monospace;font-size:10px;color:var(--text2);
-}
+/* Log */
+.sys-log{background:#000;border:1px solid var(--border);border-radius:8px;padding:10px;height:90px;overflow-y:auto;font-family:'Share Tech Mono',monospace;font-size:10px;color:var(--text2);}
 .sys-log::-webkit-scrollbar{width:4px;}
 .sys-log::-webkit-scrollbar-thumb{background:var(--border);}
 .le{line-height:1.9;}
-.le.ok{color:var(--green);}
-.le.info{color:var(--cyan);}
-.le.warn{color:var(--orange);}
-.le.err{color:var(--red);}
+.le.ok{color:var(--green);}.le.info{color:var(--cyan);}.le.warn{color:var(--orange);}.le.err{color:var(--red);}
 
-/* ── Grid layouts ── */
+/* ID Connect */
+.id-connect-wrap{display:grid;grid-template-columns:1fr 1fr;gap:20px;}
+.id-card{background:linear-gradient(135deg,var(--card),var(--card2));border:1px solid var(--border);border-radius:14px;padding:24px;text-align:center;position:relative;overflow:hidden;}
+.id-card::before{content:'';position:absolute;inset:0;background:radial-gradient(ellipse at top,rgba(0,229,255,.06) 0%,transparent 70%);}
+.id-big{font-family:'Share Tech Mono',monospace;font-size:38px;font-weight:700;color:var(--cyan);letter-spacing:6px;text-shadow:0 0 20px rgba(0,229,255,.4);margin:12px 0;}
+.id-card h3{font-size:13px;color:var(--text2);letter-spacing:2px;text-transform:uppercase;margin-bottom:4px;}
+
+/* Toast */
+.toast{position:fixed;bottom:24px;right:24px;background:var(--card);border:1px solid var(--border);border-radius:12px;padding:14px 20px;font-size:14px;z-index:999;transform:translateX(280px);opacity:0;transition:all .3s;max-width:280px;box-shadow:0 8px 30px rgba(0,0,0,.5);}
+.toast.show{transform:translateX(0);opacity:1;}
+.toast.t-ok{border-color:var(--green);}.toast.t-err{border-color:var(--red);}.toast.t-info{border-color:var(--cyan);}
+
+/* Layout */
 .g2{display:grid;grid-template-columns:1fr 1fr;gap:16px;}
 .g3{display:grid;grid-template-columns:2fr 1fr;gap:16px;}
 .flex-col{display:flex;flex-direction:column;gap:12px;}
-.mt8{margin-top:8px;}
-.mt12{margin-top:12px;}
-.mt16{margin-top:16px;}
 .flex-row{display:flex;gap:10px;align-items:center;}
+.mt8{margin-top:8px;}.mt12{margin-top:12px;}.mt16{margin-top:16px;}
 
-/* ── Notification ── */
-.toast{
-  position:fixed;bottom:24px;right:24px;
-  background:var(--card);border:1px solid var(--border);
-  border-radius:12px;padding:14px 20px;font-size:14px;
-  z-index:999;transform:translateX(280px);opacity:0;
-  transition:all .3s;max-width:280px;
-  box-shadow:0 8px 30px rgba(0,0,0,.5);
-}
-.toast.show{transform:translateX(0);opacity:1;}
-.toast.t-ok{border-color:var(--green);}
-.toast.t-err{border-color:var(--red);}
-.toast.t-info{border-color:var(--cyan);}
-
-/* ── Modal ── */
-.modal-bg{
-  position:fixed;inset:0;background:rgba(0,0,0,.75);
-  display:flex;align-items:center;justify-content:center;
-  z-index:500;backdrop-filter:blur(4px);
-  opacity:0;pointer-events:none;transition:opacity .25s;
-}
-.modal-bg.open{opacity:1;pointer-events:all;}
-.modal{
-  background:var(--card);border:1px solid var(--border2);
-  border-radius:16px;padding:28px;width:360px;max-width:90vw;
-  animation:popIn .25s ease;
-}
-@keyframes popIn{from{transform:scale(.9);opacity:0}to{transform:scale(1);opacity:1}}
-.modal h2{font-size:17px;font-weight:700;color:var(--white);margin-bottom:6px;}
-.modal p{font-size:13px;color:var(--text2);margin-bottom:18px;}
-
-/* ── Scrollbar global ── */
+/* Scrollbar */
 .panels::-webkit-scrollbar{width:5px;}
 .panels::-webkit-scrollbar-track{background:transparent;}
 .panels::-webkit-scrollbar-thumb{background:var(--border);border-radius:3px;}
 
-/* ── Mobile ── */
+/* Mobile */
 @media(max-width:680px){
   .g2,.g3,.stats-g,.id-connect-wrap{grid-template-columns:1fr;}
-  .tabs{overflow-x:auto;padding-bottom:0;}
   .panels{padding:14px;}
   .id-big{font-size:26px;}
 }
+
+/* M3U URL input area */
+.m3u-input-area{display:flex;gap:8px;margin-bottom:12px;}
+.m3u-input-area .inp{flex:1;}
+.iptv-stats{display:flex;gap:12px;margin-bottom:12px;font-family:'Share Tech Mono',monospace;font-size:11px;color:var(--text2);}
+.iptv-stats span{color:var(--cyan);}
+.ch-empty{text-align:center;padding:40px 20px;color:var(--text2);}
+.ch-empty .ce-icon{font-size:40px;margin-bottom:10px;opacity:.4;}
+.ch-empty p{font-size:13px;line-height:1.7;}
+.search-inp{position:relative;margin-bottom:12px;}
+.search-inp .inp{padding-left:36px;}
+.search-inp::before{content:'🔍';position:absolute;left:12px;top:50%;transform:translateY(-50%);font-size:14px;pointer-events:none;}
+.playing-now{display:flex;align-items:center;gap:8px;padding:8px 12px;background:rgba(0,255,157,.06);border:1px solid rgba(0,255,157,.25);border-radius:8px;margin-bottom:12px;font-size:12px;color:var(--green);font-family:'Share Tech Mono',monospace;}
+.playing-now .pn-dot{width:6px;height:6px;border-radius:50%;background:var(--green);animation:blink 1s infinite;flex-shrink:0;}
 </style>
 </head>
 <body>
@@ -436,7 +243,6 @@ input[type=range]::-webkit-slider-thumb{-webkit-appearance:none;width:14px;heigh
         <span class="logo-sub">CAST &amp; MIRROR SYSTEM</span>
       </div>
     </div>
-
     <div class="my-id-badge" id="myIdBadge" title="Clique para copiar">
       <div>
         <div class="label">MEU ID</div>
@@ -444,7 +250,6 @@ input[type=range]::-webkit-slider-thumb{-webkit-appearance:none;width:14px;heigh
       </div>
       <div class="copy-hint">📋</div>
     </div>
-
     <div class="hdr-status">
       <div class="dot" id="hdrDot"></div>
       <span id="hdrStatus">OFFLINE</span>
@@ -462,7 +267,7 @@ input[type=range]::-webkit-slider-thumb{-webkit-appearance:none;width:14px;heigh
 
     <div class="panels">
 
-      <!-- ══ TAB: ESPELHAR ══ -->
+      <!-- TAB: ESPELHAR -->
       <div class="panel active" id="panel-mirror">
         <div class="g3">
           <div class="flex-col">
@@ -475,24 +280,20 @@ input[type=range]::-webkit-slider-thumb{-webkit-appearance:none;width:14px;heigh
                   <p>Nenhuma fonte ativa<br><small>Espelhe a tela ou carregue mídia</small></p>
                 </div>
               </div>
-
               <div class="prog-wrap">
-                <div class="prog-labels">
-                  <span id="vidTime">0:00</span><span id="vidDur">0:00</span>
-                </div>
-                <div class="prog-bar"><div class="prog-fill" id="progFill"></div></div>
+                <div class="prog-labels"><span id="vidTime">0:00</span><span id="vidDur">0:00</span></div>
+                <div class="prog-bar" id="progBar"><div class="prog-fill" id="progFill"></div></div>
               </div>
-
               <div class="media-ctrl">
                 <button class="m-btn" id="mRew">⏮</button>
                 <button class="m-btn" id="mPlay">▶</button>
                 <button class="m-btn" id="mFwd">⏭</button>
                 <button class="m-btn" id="mMute">🔊</button>
-                <button class="m-btn" id="mFull">⛶</button>
+                <button class="m-btn" id="mFs">⛶</button>
               </div>
               <div class="vol-wrap">
                 <span>🔈</span>
-                <input type="range" id="volSlider" min="0" max="100" value="80">
+                <input type="range" id="volSlider" min="0" max="100" value="100">
                 <span>🔊</span>
               </div>
             </div>
@@ -500,970 +301,834 @@ input[type=range]::-webkit-slider-thumb{-webkit-appearance:none;width:14px;heigh
             <div class="card">
               <div class="card-title">📊 Estatísticas</div>
               <div class="stats-g">
-                <div class="stat-b"><div class="stat-v" id="sFps">—</div><div class="stat-l">FPS</div></div>
-                <div class="stat-b"><div class="stat-v" id="sBit">—</div><div class="stat-l">Mbps</div></div>
-                <div class="stat-b"><div class="stat-v" id="sLat">—</div><div class="stat-l">Latência</div></div>
-                <div class="stat-b"><div class="stat-v" id="sQ">—</div><div class="stat-l">Qualidade</div></div>
+                <div class="stat-b"><div class="stat-v" id="statFps">0</div><div class="stat-l">FPS</div></div>
+                <div class="stat-b"><div class="stat-v" id="statBit">0</div><div class="stat-l">Kbps</div></div>
+                <div class="stat-b"><div class="stat-v" id="statLat">0</div><div class="stat-l">ms</div></div>
+                <div class="stat-b"><div class="stat-v" id="statPeer">0</div><div class="stat-l">Peers</div></div>
               </div>
             </div>
           </div>
 
           <div class="flex-col">
             <div class="card">
-              <div class="card-title">⚡ Fontes</div>
+              <div class="card-title">⚙️ Fonte</div>
               <div class="flex-col">
-                <button class="btn btn-cyan btn-full" id="btnScreen">🖥️ &nbsp;Espelhar Tela</button>
-                <button class="btn btn-green btn-full" id="btnCamera">📷 &nbsp;Câmera ao Vivo</button>
-                <button class="btn btn-orange btn-full" id="btnFile">📂 &nbsp;Arquivo Local</button>
-                <input type="file" id="hiddenFile" accept="video/*,audio/*,image/*" style="display:none">
+                <button class="btn btn-cyan btn-full" id="btnScreen">🖥️ Espelhar Tela</button>
+                <button class="btn btn-ghost btn-full" id="btnCam">📷 Câmera</button>
+                <button class="btn btn-ghost btn-full" id="btnStop" disabled>⏹ Parar Fonte</button>
               </div>
             </div>
 
             <div class="card">
               <div class="card-title">📡 Transmitir Para</div>
-              <div id="castTargets" class="dev-list">
-                <div class="no-dev">Nenhuma TV/dispositivo conectado.<br>Use "Conectar ID" ou "Buscar TVs".</div>
+              <div id="castTargets"><div class="no-dev">Nenhum dispositivo conectado</div></div>
+              <div class="mt12">
+                <button class="btn btn-ghost btn-full btn-sm" id="btnRefreshCast">🔄 Atualizar</button>
               </div>
             </div>
 
             <div class="card">
-              <div class="card-title">🎮 Controle</div>
-              <div class="flex-col">
-                <button class="btn btn-cyan btn-full" id="btnCast" disabled>📡 &nbsp;INICIAR CAST</button>
-                <button class="btn btn-ghost btn-full" id="btnStop" disabled>⏹ &nbsp;PARAR CAST</button>
-                <button class="btn btn-red btn-full" id="btnDisc" disabled>🔌 &nbsp;Desconectar</button>
-              </div>
-            </div>
-
-            <div class="card">
-              <div class="card-title">📟 Log</div>
+              <div class="card-title">🖥️ Log do Sistema</div>
               <div class="sys-log" id="sysLog"></div>
             </div>
           </div>
         </div>
       </div>
 
-      <!-- ══ TAB: CONECTAR ID ══ -->
+      <!-- TAB: CONECTAR ID -->
       <div class="panel" id="panel-connect">
         <div class="id-connect-wrap">
-          <!-- Meu ID -->
           <div class="id-card">
-            <h3>Meu ID Screen TV</h3>
+            <h3>Meu ID de Conexão</h3>
             <div class="id-big" id="myIdBig">——————</div>
-            <p style="font-size:12px;color:var(--text2);margin-bottom:16px">
-              Compartilhe este ID com quem quer se conectar ao seu dispositivo
-            </p>
-            <button class="btn btn-cyan btn-full" id="btnCopyId">📋 &nbsp;Copiar ID</button>
-            <button class="btn btn-ghost btn-full mt8" id="btnNewId">🔄 &nbsp;Gerar Novo ID</button>
-
-            <div style="margin-top:20px;text-align:left">
-              <div class="card-title">👥 Conectados a Mim</div>
-              <div class="peer-list" id="peerList">
-                <div style="font-size:12px;color:var(--text2);text-align:center;padding:12px">Ninguém conectado ainda</div>
-              </div>
+            <p style="font-size:12px;color:var(--text2);margin-bottom:16px;">Compartilhe este ID para receber conexões</p>
+            <button class="btn btn-cyan btn-full" id="btnCopyId">📋 Copiar ID</button>
+            <div class="mt12">
+              <button class="btn btn-ghost btn-full btn-sm" id="btnNewId">🔄 Gerar Novo ID</button>
             </div>
           </div>
 
-          <!-- Conectar a outro ID -->
           <div class="flex-col">
             <div class="card">
-              <div class="card-title">🔗 Conectar por ID</div>
-              <p style="font-size:13px;color:var(--text2);margin-bottom:14px">
-                Digite o ID do outro dispositivo (celular, Smart TV Android ou PC com Screen TV)
-              </p>
-              <label class="lbl">ID do Dispositivo</label>
-              <input class="inp inp-id" id="remoteIdInp" placeholder="ABC-123" maxlength="7">
-              <div class="flex-col mt12">
-                <button class="btn btn-cyan btn-full" id="btnConnect">🔗 &nbsp;CONECTAR AUTOMATICAMENTE</button>
-                <button class="btn btn-ghost btn-full" id="btnSendScreen">📤 &nbsp;Enviar Minha Tela</button>
-                <button class="btn btn-purple btn-full" id="btnReceive">📥 &nbsp;Receber Tela</button>
+              <div class="card-title">🔗 Conectar a um ID</div>
+              <label class="lbl">ID do Destino</label>
+              <input class="inp" id="targetIdInp" placeholder="Ex: 847291" maxlength="6" style="font-family:'Share Tech Mono',monospace;font-size:22px;letter-spacing:6px;text-align:center;">
+              <div class="mt12">
+                <button class="btn btn-green btn-full" id="btnConnectId">🔗 Conectar</button>
               </div>
+              <div class="mt12" id="connStatus" style="font-family:'Share Tech Mono',monospace;font-size:11px;color:var(--text2);text-align:center;"></div>
             </div>
 
             <div class="card">
-              <div class="card-title">📱 Dispositivos Recentes</div>
-              <div class="flex-col" id="recentDevs">
-                <div style="font-size:12px;color:var(--text2);text-align:center;padding:12px">Nenhum histórico ainda</div>
-              </div>
-            </div>
-
-            <div class="card">
-              <div class="card-title">ℹ️ Como Usar</div>
-              <div style="font-size:12px;color:var(--text2);line-height:2">
-                1. Abra o <strong style="color:var(--cyan)">Screen TV</strong> nos dois dispositivos<br>
-                2. No dispositivo destino, copie o <strong style="color:var(--cyan)">Meu ID</strong><br>
-                3. No dispositivo origem, cole o ID no campo acima<br>
-                4. Clique em <strong style="color:var(--cyan)">Conectar Automaticamente</strong><br>
-                5. Escolha <strong style="color:var(--green)">Enviar</strong> ou <strong style="color:var(--purple)">Receber</strong>
-              </div>
+              <div class="card-title">👥 Conexões Ativas</div>
+              <div id="peerList"><div class="no-dev">Nenhuma conexão ativa</div></div>
             </div>
           </div>
         </div>
       </div>
 
-      <!-- ══ TAB: BUSCAR TVs ══ -->
+      <!-- TAB: BUSCAR TVs -->
       <div class="panel" id="panel-scan">
         <div class="g2">
-          <div class="flex-col">
-            <div class="card">
-              <div class="card-title">🔍 Scanner de Rede</div>
-              <div class="radar-box">
-                <div class="radar">
-                  <div class="r-ring"></div><div class="r-ring"></div>
-                  <div class="r-ring"></div><div class="r-ring"></div>
-                  <div class="r-sweep" id="rSweep"></div>
-                  <div class="r-center"></div>
-                  <div class="r-blip" id="rb1" style="top:28%;left:62%"></div>
-                  <div class="r-blip" id="rb2" style="top:68%;left:32%"></div>
-                  <div class="r-blip" id="rb3" style="top:55%;left:74%"></div>
-                  <div class="r-blip" id="rb4" style="top:40%;left:25%"></div>
-                </div>
-                <button class="btn btn-cyan" id="btnScan">🔍 &nbsp;Iniciar Scan</button>
-                <button class="btn btn-ghost" id="btnAutoScan">⚡ &nbsp;Auto-Scan</button>
+          <div class="card">
+            <div class="card-title">📡 Radar de Dispositivos</div>
+            <div class="radar-box">
+              <div class="radar">
+                <div class="r-ring"></div><div class="r-ring"></div>
+                <div class="r-ring"></div><div class="r-ring"></div>
+                <div class="r-sweep" id="rSweep"></div>
+                <div class="r-center"></div>
+                <div class="r-blip" id="rBlip" style="top:35%;left:62%;"></div>
+                <div class="r-blip" id="rBlip2" style="top:65%;left:30%;display:none;animation-delay:.5s;"></div>
               </div>
-            </div>
-
-            <div class="card">
-              <div class="card-title">⚙️ Protocolos</div>
-              <div class="flex-col">
-                <label style="display:flex;align-items:center;gap:10px;font-size:13px;cursor:pointer">
-                  <input type="checkbox" id="chkMiracast" checked style="accent-color:var(--cyan)"> Miracast (Android/Windows)
-                </label>
-                <label style="display:flex;align-items:center;gap:10px;font-size:13px;cursor:pointer">
-                  <input type="checkbox" id="chkChromecast" checked style="accent-color:var(--cyan)"> Chromecast / Google Cast
-                </label>
-                <label style="display:flex;align-items:center;gap:10px;font-size:13px;cursor:pointer">
-                  <input type="checkbox" id="chkAirplay" style="accent-color:var(--cyan)"> AirPlay (Apple)
-                </label>
-                <label style="display:flex;align-items:center;gap:10px;font-size:13px;cursor:pointer">
-                  <input type="checkbox" id="chkWidi" checked style="accent-color:var(--cyan)"> WiDi / Wi-Fi Direct
-                </label>
-                <label style="display:flex;align-items:center;gap:10px;font-size:13px;cursor:pointer">
-                  <input type="checkbox" id="chkDlna" checked style="accent-color:var(--cyan)"> DLNA / UPnP
-                </label>
-              </div>
+              <button class="btn btn-cyan" id="btnScan">📡 Iniciar Busca</button>
+              <div style="font-size:12px;color:var(--text2);text-align:center;" id="scanInfo">Pressione para procurar dispositivos na rede</div>
             </div>
           </div>
 
-          <div class="flex-col">
-            <div class="card" style="flex:1">
-              <div class="card-title">📺 Dispositivos Encontrados</div>
-              <div class="dev-list" id="devList">
-                <div class="no-dev">Aguardando scan...<br>Clique em "Iniciar Scan" para buscar Smart TVs na rede.</div>
-              </div>
-            </div>
-
-            <div class="card">
-              <div class="card-title">⚡ Ação Rápida</div>
-              <div class="flex-col">
-                <button class="btn btn-cyan btn-full" id="btnConnectSel" disabled>🔗 &nbsp;Conectar Selecionado</button>
-                <button class="btn btn-red btn-full btn-sm" id="btnDiscScan" disabled>🔌 &nbsp;Desconectar</button>
-              </div>
+          <div class="card">
+            <div class="card-title">📺 Dispositivos Encontrados</div>
+            <div class="dev-list" id="devList">
+              <div class="no-dev">Nenhum dispositivo encontrado</div>
             </div>
           </div>
         </div>
       </div>
 
-      <!-- ══ TAB: IPTV ══ -->
+      <!-- TAB: IPTV -->
       <div class="panel" id="panel-iptv">
-        <div class="g2">
+        <div class="g3">
           <div class="flex-col">
-            <div class="card">
-              <div class="card-title">📡 Adicionar Lista IPTV</div>
-              <div class="flex-col">
-                <label class="lbl">URL da Lista M3U</label>
-                <input class="inp" id="iptvUrl" placeholder="http://servidor.com/lista.m3u">
-                <label class="lbl">Nome da Lista</label>
-                <input class="inp" id="iptvName" placeholder="Minha Lista IPTV">
-                <button class="btn btn-purple btn-full" id="btnAddIptv">➕ &nbsp;Adicionar Lista</button>
-              </div>
 
-              <div style="margin-top:16px">
-                <label class="lbl">Ou importe arquivo .m3u</label>
-                <div class="drop-z" id="m3uDrop">
-                  <input type="file" id="m3uFile" accept=".m3u,.m3u8">
-                  <div class="di">📄</div>
-                  <p>Arraste o arquivo .m3u aqui ou <strong>clique</strong></p>
+            <!-- Player IPTV -->
+            <div class="card">
+              <div class="card-title">📺 Player IPTV</div>
+              <div class="preview-wrap">
+                <video id="iptvVid" autoplay playsinline controls style="width:100%;height:100%;object-fit:contain;background:#000;"></video>
+                <div class="preview-overlay" id="iptvOverlay">
+                  <div class="preview-icon">📺</div>
+                  <p>Selecione um canal para assistir</p>
                 </div>
+              </div>
+              <div id="iptvPlayingNow" style="display:none;" class="playing-now">
+                <div class="pn-dot"></div>
+                <span id="iptvChName">—</span>
               </div>
             </div>
 
+            <!-- Canais -->
             <div class="card">
-              <div class="card-title">📂 Minhas Listas</div>
-              <div class="flex-col" id="iptvLists">
-                <div style="font-size:12px;color:var(--text2);text-align:center;padding:12px">Nenhuma lista adicionada</div>
+              <div class="card-title">📋 Lista de Canais <span id="chCount" style="color:var(--cyan);font-size:11px;margin-left:8px;"></span></div>
+
+              <div class="search-inp">
+                <input class="inp" id="chSearch" placeholder="Buscar canal..." oninput="filterChannels()">
+              </div>
+
+              <div class="filter-bar" id="catFilters">
+                <button class="filt-btn active" onclick="setCat('todos',this)">Todos</button>
+              </div>
+
+              <div class="ch-list" id="chList">
+                <div class="ch-empty">
+                  <div class="ce-icon">📺</div>
+                  <p>Nenhuma lista carregada.<br>Adicione uma lista M3U ao lado.</p>
+                </div>
               </div>
             </div>
           </div>
 
+          <!-- Painel lateral IPTV -->
           <div class="flex-col">
-            <div class="card" style="flex:1">
-              <div class="card-title">📺 Canais</div>
-              <div style="margin-bottom:10px">
-                <input class="inp" id="iptvSearch" placeholder="🔍 Filtrar canais...">
+            <div class="card">
+              <div class="card-title">📂 Carregar Lista M3U</div>
+
+              <!-- URL M3U -->
+              <label class="lbl">URL da Lista M3U</label>
+              <div class="m3u-input-area">
+                <input class="inp" id="m3uUrl" placeholder="http://... ou https://...">
+                <button class="btn btn-cyan btn-sm" id="btnLoadUrl">⬇ Carregar</button>
               </div>
-              <div class="ch-list" id="chList">
-                <div style="font-size:12px;color:var(--text2);text-align:center;padding:20px">Adicione uma lista IPTV para ver os canais</div>
+
+              <!-- Arquivo M3U -->
+              <label class="lbl" style="margin-top:10px;">Arquivo M3U / M3U8</label>
+              <div class="drop-z" id="dropZone">
+                <input type="file" id="m3uFile" accept=".m3u,.m3u8,.txt">
+                <div class="di">📁</div>
+                <p><strong>Clique ou arraste</strong> seu arquivo .m3u aqui</p>
+              </div>
+
+              <div class="mt12">
+                <button class="btn btn-red btn-full btn-sm" id="btnClearList" style="display:none;">🗑 Limpar Lista</button>
               </div>
             </div>
 
             <div class="card">
-              <div class="card-title">▶️ Reproduzindo</div>
-              <div style="font-size:13px;color:var(--text2)" id="iptvNowPlaying">Nenhum canal selecionado</div>
-              <div class="flex-col mt12">
-                <button class="btn btn-green btn-full" id="btnIptvCast" disabled>📡 &nbsp;Transmitir para TV</button>
+              <div class="card-title">📊 Info da Lista</div>
+              <div id="m3uInfo" style="font-family:'Share Tech Mono',monospace;font-size:11px;color:var(--text2);line-height:2;">
+                <div>CANAIS: <span id="infoTotal" style="color:var(--cyan);">0</span></div>
+                <div>CATEGORIAS: <span id="infoCats" style="color:var(--cyan);">0</span></div>
+                <div>COM LOGO: <span id="infoLogos" style="color:var(--cyan);">0</span></div>
+                <div>STATUS: <span id="infoStatus" style="color:var(--text2);">Sem lista</span></div>
               </div>
+            </div>
+
+            <div class="card">
+              <div class="card-title">🖥️ Log IPTV</div>
+              <div class="sys-log" id="iptvLog"></div>
             </div>
           </div>
         </div>
       </div>
 
-      <!-- ══ TAB: MÍDIA ══ -->
+      <!-- TAB: MÍDIA -->
       <div class="panel" id="panel-media">
         <div class="g2">
-          <div class="flex-col">
-            <div class="card">
-              <div class="card-title">📂 Carregar Mídia</div>
-              <div class="drop-z" id="mediaDrop">
-                <input type="file" id="mediaFile" accept="video/*,audio/*,image/*">
-                <div class="di">🎬</div>
-                <p>Arraste vídeo, áudio ou imagem aqui<br>ou <strong>clique para selecionar</strong></p>
-              </div>
+          <div class="card">
+            <div class="card-title">🎬 Carregar Mídia</div>
+            <div class="drop-z" id="mediaDropZone">
+              <input type="file" id="mediaFile" accept="video/*,audio/*">
+              <div class="di">🎬</div>
+              <p><strong>Clique ou arraste</strong> vídeo/áudio aqui</p>
             </div>
-
-            <div class="card">
-              <div class="card-title">🎛️ Configurações de Stream</div>
-              <div class="flex-col">
-                <label class="lbl">Qualidade</label>
-                <select class="inp" id="selQuality">
-                  <option value="1080">Full HD 1080p</option>
-                  <option value="720" selected>HD 720p</option>
-                  <option value="480">SD 480p</option>
-                  <option value="360">360p (economia)</option>
-                </select>
-                <label class="lbl">Taxa de Frames</label>
-                <select class="inp" id="selFps">
-                  <option value="60">60 FPS</option>
-                  <option value="30" selected>30 FPS</option>
-                  <option value="24">24 FPS</option>
-                </select>
-                <label class="lbl">Codec</label>
-                <select class="inp" id="selCodec">
-                  <option value="h264">H.264 (compatível)</option>
-                  <option value="vp8">VP8 (WebRTC)</option>
-                  <option value="vp9">VP9 (alta qualidade)</option>
-                </select>
+            <div class="mt12">
+              <label class="lbl">URL de Mídia / Stream</label>
+              <div class="flex-row">
+                <input class="inp" id="mediaUrl" placeholder="http://... rtmp://... hls://...">
+                <button class="btn btn-cyan btn-sm" id="btnLoadMedia">▶</button>
               </div>
             </div>
           </div>
-
-          <div class="flex-col">
-            <div class="card">
-              <div class="card-title">🎬 Player</div>
-              <div class="preview-wrap">
-                <video id="mediaVid" autoplay muted playsinline controls style="width:100%;height:100%;object-fit:contain;"></video>
-              </div>
-              <div class="media-ctrl mt8">
-                <button class="btn btn-cyan btn-sm" id="btnMediaCast" disabled>📡 Cast para TV</button>
-                <button class="btn btn-ghost btn-sm" id="btnMediaStop">⏹ Stop</button>
-              </div>
-            </div>
-
-            <div class="card">
-              <div class="card-title">📜 Histórico</div>
-              <div class="flex-col" id="mediaHistory">
-                <div style="font-size:12px;color:var(--text2);text-align:center;padding:12px">Nenhuma mídia carregada ainda</div>
-              </div>
+          <div class="card">
+            <div class="card-title">📋 Histórico</div>
+            <div id="mediaHistory" class="flex-col" style="font-size:13px;color:var(--text2);">
+              <div class="no-dev">Nenhuma mídia carregada ainda</div>
             </div>
           </div>
         </div>
       </div>
 
-    </div><!-- /panels -->
-  </div><!-- /body-wrap -->
-</div><!-- /app -->
-
-<!-- ══ Modal Conectando ══ -->
-<div class="modal-bg" id="modalConnecting">
-  <div class="modal" style="text-align:center">
-    <div style="font-size:48px;margin-bottom:12px" id="modalIcon">🔗</div>
-    <h2 id="modalTitle">Conectando...</h2>
-    <p id="modalMsg">Estabelecendo conexão com o dispositivo</p>
-    <div class="prog-bar" style="margin:16px 0"><div class="prog-fill" id="modalProg" style="transition:width .3s"></div></div>
-    <button class="btn btn-red btn-full" id="btnCancelConn">Cancelar</button>
+    </div>
   </div>
 </div>
 
-<!-- ══ Toast ══ -->
+<!-- Toast -->
 <div class="toast" id="toast"></div>
 
 <script>
-// ═══════════════════════════════════════════
-// STATE
-// ═══════════════════════════════════════════
-const S = {
-  myId: '',
-  connected: null,        // TV from scan
-  peers: [],              // ID-connected peers
-  casting: false,
-  stream: null,
-  statsTimer: null,
-  autoScanTimer: null,
-  autoScan: false,
-  foundDevices: [],
-  iptvLists: [],
-  iptvChannels: [],
-  currentChannel: null,
-  mediaHistory: [],
-  recentIds: JSON.parse(localStorage.getItem('stv_recent')||'[]'),
-};
-
-// ═══════════════════════════════════════════
-// UTILS
-// ═══════════════════════════════════════════
+// ═══════════════════════════════════════════════
+// UTILITÁRIOS
+// ═══════════════════════════════════════════════
 const $ = id => document.getElementById(id);
-function fmt(s){if(!s||isNaN(s))return'0:00';const m=Math.floor(s/60),ss=String(Math.floor(s%60)).padStart(2,'0');return`${m}:${ss}`;}
-function rand(a,b){return Math.floor(Math.random()*(b-a+1))+a;}
-function randF(a,b){return (Math.random()*(b-a)+a).toFixed(1);}
+let myId = '';
+let channels = [];
+let currentCat = 'todos';
+let currentStream = null;
+let mediaStream = null;
+let toastTimer = null;
 
-function log(msg,type='info'){
-  const el=document.createElement('div');
-  el.className=`le ${type}`;
-  const t=new Date().toLocaleTimeString('pt-BR',{hour12:false});
-  el.textContent=`[${t}] ${msg}`;
-  $('sysLog').appendChild(el);
-  $('sysLog').scrollTop=9999;
+function toast(msg, type='info') {
+  const t = $('toast');
+  t.textContent = msg;
+  t.className = `toast show t-${type}`;
+  clearTimeout(toastTimer);
+  toastTimer = setTimeout(() => t.className = 'toast', 3000);
 }
 
-function toast(msg,type='info'){
-  const n=$('toast');
-  n.textContent=msg;
-  n.className=`toast t-${type} show`;
-  clearTimeout(n._t);
-  n._t=setTimeout(()=>n.classList.remove('show'),3500);
+function log(el, msg, cls='info') {
+  const d = document.createElement('div');
+  d.className = `le ${cls}`;
+  d.textContent = `[${new Date().toLocaleTimeString()}] ${msg}`;
+  el.appendChild(d);
+  el.scrollTop = el.scrollHeight;
 }
 
-function setStatus(txt,cls){
-  $('hdrStatus').textContent=txt;
-  $('hdrDot').className=`dot ${cls}`;
+function slog(msg, cls='info') { log($('sysLog'), msg, cls); }
+function ilog(msg, cls='info') { log($('iptvLog'), msg, cls); }
+
+function fmtTime(s) {
+  s = Math.floor(s || 0);
+  const m = Math.floor(s/60), sec = s%60;
+  return `${m}:${sec.toString().padStart(2,'0')}`;
 }
 
-// ═══════════════════════════════════════════
-// ID SYSTEM
-// ═══════════════════════════════════════════
-function genId(){
-  const chars='ABCDEFGHJKLMNPQRSTUVWXYZ23456789';
-  let id='';
-  for(let i=0;i<3;i++) id+=chars[rand(0,chars.length-1)];
-  id+='-';
-  for(let i=0;i<3;i++) id+=chars[rand(0,chars.length-1)];
-  return id;
-}
-
-function applyId(id){
-  S.myId=id;
-  $('myIdDisplay').textContent=id;
-  $('myIdBig').textContent=id;
-  localStorage.setItem('stv_id',id);
-  log(`Meu ID: ${id}`,'ok');
-}
-
-function initId(){
-  const saved=localStorage.getItem('stv_id');
-  applyId(saved||genId());
-}
-
-$('myIdBadge').addEventListener('click',()=>{
-  navigator.clipboard?.writeText(S.myId);
-  toast('📋 ID copiado: '+S.myId,'ok');
-});
-$('btnCopyId').addEventListener('click',()=>{
-  navigator.clipboard?.writeText(S.myId);
-  toast('📋 ID copiado!','ok');
-});
-$('btnNewId').addEventListener('click',()=>{
-  applyId(genId());
-  toast('🔄 Novo ID gerado','info');
-});
-
-// ═══════════════════════════════════════════
+// ═══════════════════════════════════════════════
 // TABS
-// ═══════════════════════════════════════════
-document.querySelectorAll('.tab').forEach(tab=>{
-  tab.addEventListener('click',()=>{
-    document.querySelectorAll('.tab').forEach(t=>t.classList.remove('active'));
-    document.querySelectorAll('.panel').forEach(p=>p.classList.remove('active'));
+// ═══════════════════════════════════════════════
+document.querySelectorAll('.tab').forEach(tab => {
+  tab.addEventListener('click', () => {
+    document.querySelectorAll('.tab').forEach(t => t.classList.remove('active'));
+    document.querySelectorAll('.panel').forEach(p => p.classList.remove('active'));
     tab.classList.add('active');
-    $('panel-'+tab.dataset.tab).classList.add('active');
+    $('panel-' + tab.dataset.tab).classList.add('active');
   });
 });
 
-// ═══════════════════════════════════════════
-// SCREEN / CAMERA CAPTURE
-// ═══════════════════════════════════════════
-async function captureScreen(){
-  try{
-    const stream=await navigator.mediaDevices.getDisplayMedia({video:{frameRate:30,width:1920},audio:true});
-    setStream(stream,'🖥️ Tela capturada');
-    stream.getVideoTracks()[0].addEventListener('ended',clearStream);
-  }catch(e){
-    if(e.name!=='NotAllowedError') toast('Erro: '+e.message,'err');
-    else log('Captura cancelada','warn');
-  }
+// ═══════════════════════════════════════════════
+// MEU ID
+// ═══════════════════════════════════════════════
+function genId() {
+  return Math.floor(100000 + Math.random() * 900000).toString();
 }
 
-async function captureCamera(){
-  try{
-    const stream=await navigator.mediaDevices.getUserMedia({video:{facingMode:'user',width:1280},audio:true});
-    setStream(stream,'📷 Câmera ativa');
-    log('Câmera iniciada','ok');
-  }catch(e){
-    toast('Erro câmera: '+e.message,'err');
-  }
+function setMyId(id) {
+  myId = id;
+  $('myIdDisplay').textContent = id;
+  $('myIdBig').textContent = id;
+  localStorage.setItem('screentvId', id);
 }
 
-function setStream(stream,msg){
-  S.stream=stream;
-  const v=$('previewVid');
-  v.srcObject=stream;
+function initId() {
+  const saved = localStorage.getItem('screentvId');
+  setMyId(saved || genId());
+}
+
+$('myIdBadge').addEventListener('click', () => {
+  navigator.clipboard.writeText(myId).then(() => toast('ID copiado!', 'ok'));
+});
+$('btnCopyId').addEventListener('click', () => {
+  navigator.clipboard.writeText(myId).then(() => toast('ID copiado!', 'ok'));
+});
+$('btnNewId').addEventListener('click', () => { setMyId(genId()); toast('Novo ID gerado!', 'info'); });
+
+$('btnConnectId').addEventListener('click', () => {
+  const tid = $('targetIdInp').value.trim();
+  if (tid.length !== 6 || !/^\d+$/.test(tid)) { toast('ID inválido — deve ter 6 dígitos', 'err'); return; }
+  $('connStatus').textContent = 'Conectando...';
+  $('connStatus').style.color = 'var(--cyan)';
+  setTimeout(() => {
+    $('connStatus').textContent = `✓ Conectado ao ID ${tid}`;
+    $('connStatus').style.color = 'var(--green)';
+    toast(`Conectado ao ID ${tid}`, 'ok');
+    slog(`Conexão estabelecida com ID ${tid}`, 'ok');
+    addPeer(tid);
+  }, 1500);
+});
+
+function addPeer(id) {
+  const pl = $('peerList');
+  if (pl.querySelector('.no-dev')) pl.innerHTML = '';
+  const d = document.createElement('div');
+  d.className = 'peer-item';
+  d.innerHTML = `<div class="peer-dot on"></div><div class="peer-name">Dispositivo</div><div class="peer-id">#${id}</div>`;
+  pl.appendChild(d);
+  $('statPeer').textContent = pl.querySelectorAll('.peer-item').length;
+}
+
+// ═══════════════════════════════════════════════
+// ESPELHAR TELA
+// ═══════════════════════════════════════════════
+const vid = $('previewVid');
+
+$('btnScreen').addEventListener('click', async () => {
+  try {
+    const stream = await navigator.mediaDevices.getDisplayMedia({ video: true, audio: true });
+    setStream(stream);
+    slog('Captura de tela iniciada', 'ok');
+    toast('Espelhamento iniciado!', 'ok');
+  } catch(e) {
+    slog('Erro ao capturar tela: ' + e.message, 'err');
+    toast('Não foi possível acessar a tela', 'err');
+  }
+});
+
+$('btnCam').addEventListener('click', async () => {
+  try {
+    const stream = await navigator.mediaDevices.getUserMedia({ video: true, audio: true });
+    setStream(stream);
+    slog('Câmera iniciada', 'ok');
+    toast('Câmera ativa!', 'ok');
+  } catch(e) {
+    toast('Câmera indisponível', 'err');
+  }
+});
+
+function setStream(stream) {
+  mediaStream = stream;
+  vid.srcObject = stream;
   $('prevOverlay').classList.add('gone');
-  log(msg,'ok');
+  $('btnStop').disabled = false;
+  $('hdrDot').className = 'dot on';
+  $('hdrStatus').textContent = 'AO VIVO';
   startStats();
-  updateCastTargets();
 }
 
-function clearStream(){
-  if(S.stream){S.stream.getTracks().forEach(t=>t.stop());S.stream=null;}
-  $('previewVid').srcObject=null;
+$('btnStop').addEventListener('click', () => {
+  if (mediaStream) { mediaStream.getTracks().forEach(t => t.stop()); mediaStream = null; }
+  vid.srcObject = null;
   $('prevOverlay').classList.remove('gone');
+  $('btnStop').disabled = true;
+  $('hdrDot').className = 'dot';
+  $('hdrStatus').textContent = 'OFFLINE';
   stopStats();
-  log('Captura encerrada','warn');
-}
-
-$('btnScreen').addEventListener('click',captureScreen);
-$('btnCamera').addEventListener('click',captureCamera);
-$('btnFile').addEventListener('click',()=>$('hiddenFile').click());
-$('hiddenFile').addEventListener('change',e=>{
-  const f=e.target.files[0];
-  if(f) loadVideoFile(f,$('previewVid'),'prevOverlay');
+  slog('Transmissão encerrada', 'warn');
 });
 
-function loadVideoFile(file,vidEl,overlayId){
-  const url=URL.createObjectURL(file);
-  vidEl.src=url;vidEl.srcObject=null;
-  if(overlayId) $(overlayId)?.classList.add('gone');
-  vidEl.play();
-  log(`Arquivo: ${file.name}`,'ok');
-  startStats();
-  addHistory(file.name);
-}
-
-// ═══════════════════════════════════════════
-// VIDEO PLAYER CONTROLS
-// ═══════════════════════════════════════════
-const vd=$('previewVid');
-vd.addEventListener('timeupdate',()=>{
-  if(!vd.duration)return;
-  $('progFill').style.width=(vd.currentTime/vd.duration*100)+'%';
-  $('vidTime').textContent=fmt(vd.currentTime);
-  $('vidDur').textContent=fmt(vd.duration);
+// Controls
+$('mPlay').addEventListener('click', () => {
+  if (vid.paused) { vid.play(); $('mPlay').textContent = '⏸'; }
+  else { vid.pause(); $('mPlay').textContent = '▶'; }
 });
-
-$('mPlay').addEventListener('click',()=>{
-  if(vd.paused){vd.play();$('mPlay').textContent='⏸';}
-  else{vd.pause();$('mPlay').textContent='▶';}
+$('mMute').addEventListener('click', () => {
+  vid.muted = !vid.muted;
+  $('mMute').textContent = vid.muted ? '🔇' : '🔊';
 });
-$('mRew').addEventListener('click',()=>vd.currentTime=Math.max(0,vd.currentTime-10));
-$('mFwd').addEventListener('click',()=>vd.currentTime=Math.min(vd.duration||0,vd.currentTime+10));
-let muted=false;
-$('mMute').addEventListener('click',()=>{muted=!muted;vd.muted=muted;$('mMute').textContent=muted?'🔇':'🔊';});
-$('mFull').addEventListener('click',()=>{if(vd.requestFullscreen)vd.requestFullscreen();});
-$('volSlider').addEventListener('input',e=>vd.volume=e.target.value/100);
+$('mRew').addEventListener('click', () => { vid.currentTime = Math.max(0, vid.currentTime - 10); });
+$('mFwd').addEventListener('click', () => { vid.currentTime += 10; });
+$('mFs').addEventListener('click', () => { if (vid.requestFullscreen) vid.requestFullscreen(); });
+$('volSlider').addEventListener('input', e => { vid.volume = e.target.value / 100; });
 
-// ═══════════════════════════════════════════
-// STATS
-// ═══════════════════════════════════════════
-function startStats(){
-  stopStats();
-  S.statsTimer=setInterval(()=>{
-    const fps=rand(24,30);
-    $('sFps').textContent=fps;
-    $('sBit').textContent=randF(1.5,6);
-    $('sLat').textContent=S.casting?rand(8,25)+'ms':'—';
-    $('sQ').textContent=fps>=28?'HD':fps>=22?'SD':'LOW';
-  },1000);
-}
-function stopStats(){clearInterval(S.statsTimer);}
-
-// ═══════════════════════════════════════════
-// CAST TARGETS (mirror panel)
-// ═══════════════════════════════════════════
-function updateCastTargets(){
-  const el=$('castTargets');
-  const all=[
-    ...S.peers.map(p=>({id:'peer-'+p.id,name:p.name,meta:'ID: '+p.id,ico:'📱',type:'peer'})),
-    ...(S.connected?[{id:'tv-'+S.connected.id,name:S.connected.name,meta:S.connected.ip+' · '+S.connected.protocol,ico:'📺',type:'tv'}]:[])
-  ];
-  if(!all.length){
-    el.innerHTML='<div class="no-dev">Nenhuma TV/dispositivo conectado.<br>Use "Conectar ID" ou "Buscar TVs".</div>';
-    $('btnCast').disabled=true;return;
+vid.addEventListener('timeupdate', () => {
+  if (vid.duration) {
+    $('vidTime').textContent = fmtTime(vid.currentTime);
+    $('vidDur').textContent = fmtTime(vid.duration);
+    $('progFill').style.width = (vid.currentTime / vid.duration * 100) + '%';
   }
-  el.innerHTML=all.map(d=>`
-    <div class="dev-item connected" data-tid="${d.id}">
-      <div class="dev-ico">${d.ico}</div>
-      <div class="dev-info">
-        <div class="dev-name">${d.name}</div>
-        <div class="dev-meta">${d.meta}</div>
-      </div>
-      <span class="badge badge-g">${d.type==='peer'?'ID':'TV'}</span>
-    </div>
-  `).join('');
-  $('btnCast').disabled=false;
-  $('btnDisc').disabled=false;
-}
-
-// ═══════════════════════════════════════════
-// CAST
-// ═══════════════════════════════════════════
-$('btnCast').addEventListener('click',()=>{
-  if(!S.stream&&!vd.src&&!vd.srcObject){toast('Nenhuma fonte ativa!','err');return;}
-  if(!S.connected&&!S.peers.length){toast('Nenhum destino conectado!','err');return;}
-  S.casting=true;
-  log(`Cast iniciado → ${S.connected?.name||S.peers[0]?.name}`,'ok');
-  toast('📡 Cast iniciado!','ok');
-  setStatus('CASTING','on');
-  $('btnCast').disabled=true;
-  $('btnStop').disabled=false;
 });
 
-$('btnStop').addEventListener('click',()=>{
-  S.casting=false;
-  log('Cast encerrado','warn');
-  toast('Cast parado','info');
-  setStatus('CONECTADO','on');
-  $('btnCast').disabled=false;
-  $('btnStop').disabled=true;
-});
-
-$('btnDisc').addEventListener('click',()=>{
-  S.casting=false;S.connected=null;S.peers=[];
-  updateCastTargets();renderPeers();
-  log('Desconectado','warn');
-  toast('Desconectado','info');
-  setStatus('OFFLINE','');
-  $('btnCast').disabled=true;$('btnStop').disabled=true;$('btnDisc').disabled=true;
-});
-
-// ═══════════════════════════════════════════
-// ID CONNECT SYSTEM
-// ═══════════════════════════════════════════
-function showConnectingModal(title,msg,onDone){
-  $('modalTitle').textContent=title;
-  $('modalMsg').textContent=msg;
-  $('modalProg').style.width='0%';
-  $('modalConnecting').classList.add('open');
-  let prog=0;
-  const t=setInterval(()=>{
-    prog+=rand(8,18);
-    if(prog>95)prog=95;
-    $('modalProg').style.width=prog+'%';
-  },200);
-  return {
-    finish(icon,title2,msg2){
-      clearInterval(t);
-      $('modalProg').style.width='100%';
-      $('modalIcon').textContent=icon;
-      $('modalTitle').textContent=title2;
-      $('modalMsg').textContent=msg2;
-      setTimeout(()=>{
-        $('modalConnecting').classList.remove('open');
-        onDone&&onDone();
-      },1200);
-    },
-    fail(msg2){
-      clearInterval(t);
-      $('modalIcon').textContent='❌';
-      $('modalTitle').textContent='Falha na Conexão';
-      $('modalMsg').textContent=msg2;
-      setTimeout(()=>$('modalConnecting').classList.remove('open'),2000);
-    }
-  };
-}
-
-$('btnCancelConn').addEventListener('click',()=>$('modalConnecting').classList.remove('open'));
-
-$('btnConnect').addEventListener('click',()=>{
-  const id=$('remoteIdInp').value.trim().toUpperCase();
-  if(!id||id.length<5){toast('Digite um ID válido (ex: ABC-123)','err');return;}
-  if(id===S.myId){toast('Esse é o seu próprio ID!','err');return;}
-
-  const m=showConnectingModal('🔗 Conectando...','Buscando dispositivo com ID: '+id,()=>{
-    const peer={id,name:'Dispositivo '+id,connected:true};
-    if(!S.peers.find(p=>p.id===id)) S.peers.push(peer);
-    addRecentId(id);
-    renderPeers();
-    updateCastTargets();
-    setStatus('CONECTADO','on');
-    log(`Conectado ao ID: ${id}`,'ok');
-    toast('✅ Conectado ao ID: '+id,'ok');
-  });
-
-  // Simulate finding device
-  setTimeout(()=>{
-    if(Math.random()>.15){
-      m.finish('✅','Conectado!','Dispositivo '+id+' encontrado e conectado.');
-    } else {
-      m.fail('Dispositivo não encontrado. Verifique se o Screen TV está aberto no outro dispositivo.');
-      log('ID não encontrado: '+id,'err');
-    }
-  },rand(1800,3500));
-});
-
-$('btnSendScreen').addEventListener('click',async()=>{
-  const id=$('remoteIdInp').value.trim().toUpperCase();
-  if(!id){toast('Digite o ID antes de enviar','err');return;}
-  try{
-    const stream=await navigator.mediaDevices.getDisplayMedia({video:true,audio:true});
-    setStream(stream,'📤 Enviando tela para '+id);
-    S.casting=true;
-    setStatus('ENVIANDO','on');
-    toast('📤 Enviando tela para '+id,'ok');
-    log('Transmissão de tela iniciada → ID '+id,'ok');
-  }catch(e){log('Captura cancelada','warn');}
-});
-
-$('btnReceive').addEventListener('click',()=>{
-  toast('📥 Aguardando transmissão de entrada...','info');
-  log('Modo receptor ativado. Aguardando stream...','info');
-  setStatus('AGUARDANDO','scan');
-  // Simulate receiving
-  setTimeout(()=>{
-    toast('📥 Stream recebido!','ok');
-    log('Stream recebido com sucesso','ok');
-    setStatus('RECEBENDO','on');
-  },rand(3000,6000));
-});
-
-function renderPeers(){
-  const el=$('peerList');
-  if(!S.peers.length){
-    el.innerHTML='<div style="font-size:12px;color:var(--text2);text-align:center;padding:12px">Ninguém conectado ainda</div>';
-    return;
+$('progBar').addEventListener('click', e => {
+  if (vid.duration) {
+    const r = $('progBar').getBoundingClientRect();
+    vid.currentTime = ((e.clientX - r.left) / r.width) * vid.duration;
   }
-  el.innerHTML=S.peers.map(p=>`
-    <div class="peer-item">
-      <div class="peer-dot on"></div>
-      <div class="peer-name">${p.name}</div>
-      <div class="peer-id">${p.id}</div>
-      <button class="btn btn-red btn-sm" onclick="removePeer('${p.id}')">✕</button>
-    </div>
-  `).join('');
+});
+
+// Stats
+let statsInterval;
+function startStats() {
+  statsInterval = setInterval(() => {
+    $('statFps').textContent = Math.floor(25 + Math.random() * 10);
+    $('statBit').textContent = Math.floor(800 + Math.random() * 400);
+    $('statLat').textContent = Math.floor(10 + Math.random() * 30);
+  }, 1000);
+}
+function stopStats() {
+  clearInterval(statsInterval);
+  $('statFps').textContent = '0';
+  $('statBit').textContent = '0';
+  $('statLat').textContent = '0';
 }
 
-window.removePeer=function(id){
-  S.peers=S.peers.filter(p=>p.id!==id);
-  renderPeers();updateCastTargets();
-  toast('Dispositivo removido','info');
-};
-
-function addRecentId(id){
-  S.recentIds=S.recentIds.filter(r=>r.id!==id);
-  S.recentIds.unshift({id,name:'Dispositivo '+id,ts:Date.now()});
-  if(S.recentIds.length>5)S.recentIds.pop();
-  localStorage.setItem('stv_recent',JSON.stringify(S.recentIds));
-  renderRecent();
-}
-
-function renderRecent(){
-  const el=$('recentDevs');
-  if(!S.recentIds.length){
-    el.innerHTML='<div style="font-size:12px;color:var(--text2);text-align:center;padding:12px">Nenhum histórico ainda</div>';
-    return;
-  }
-  el.innerHTML=S.recentIds.map(r=>`
-    <div style="display:flex;align-items:center;gap:10px;padding:8px 0;border-bottom:1px solid var(--border);">
-      <span style="font-size:18px">📱</span>
-      <div style="flex:1">
-        <div style="font-size:13px;font-weight:600;color:var(--white)">${r.name}</div>
-        <div style="font-family:'Share Tech Mono',monospace;font-size:11px;color:var(--text2)">${r.id}</div>
-      </div>
-      <button class="btn btn-ghost btn-sm" onclick="quickConnect('${r.id}')">Conectar</button>
-    </div>
-  `).join('');
-}
-
-window.quickConnect=function(id){
-  $('remoteIdInp').value=id;
-  $('btnConnect').click();
-};
-
-// ═══════════════════════════════════════════
-// SCANNER
-// ═══════════════════════════════════════════
-const TV_DB=[
-  {id:'tv1',name:'Samsung Smart TV 4K',ip:'192.168.1.101',type:'Samsung',protocol:'Miracast',signal:4},
-  {id:'tv2',name:'LG OLED WebOS',ip:'192.168.1.102',type:'LG',protocol:'WiDi',signal:3},
-  {id:'tv3',name:'Sony Bravia XR',ip:'192.168.1.103',type:'Sony',protocol:'Chromecast',signal:4},
-  {id:'tv4',name:'TCL Roku TV',ip:'192.168.1.104',type:'TCL',protocol:'DLNA',signal:2},
-  {id:'tv5',name:'Philips Ambilight',ip:'192.168.1.105',type:'Philips',protocol:'Miracast',signal:3},
-  {id:'tv6',name:'Hisense Android TV',ip:'192.168.1.106',type:'Hisense',protocol:'Chromecast',signal:4},
-  {id:'tv7',name:'Xiaomi Mi TV',ip:'192.168.1.107',type:'Xiaomi',protocol:'Miracast',signal:3},
+// ═══════════════════════════════════════════════
+// SCAN
+// ═══════════════════════════════════════════════
+const mockDevices = [
+  { name: 'Samsung Smart TV', ip: '192.168.1.101', type: '📺', sig: 4 },
+  { name: 'LG OLED 55"', ip: '192.168.1.105', type: '📺', sig: 3 },
+  { name: 'Chromecast Ultra', ip: '192.168.1.110', type: '🔵', sig: 4 },
+  { name: 'Fire TV Stick 4K', ip: '192.168.1.115', type: '🔴', sig: 2 },
+  { name: 'Apple TV 4K', ip: '192.168.1.120', type: '⬛', sig: 3 },
 ];
-const tvIcons={Samsung:'🖥️',LG:'📺',Sony:'📡',TCL:'📻',Philips:'🌈',Hisense:'🎬',Xiaomi:'📲'};
 
-function startScan(){
-  if(S.scanning)return;
-  S.scanning=true;
-  S.foundDevices=[];
-  renderDevList();
+let scanning = false;
+$('btnScan').addEventListener('click', () => {
+  if (scanning) return;
+  scanning = true;
+  $('btnScan').textContent = '⏳ Buscando...';
+  $('btnScan').disabled = true;
   $('rSweep').classList.add('go');
-  ['rb1','rb2','rb3','rb4'].forEach(id=>$(id).style.display='none');
-  log('Varredura iniciada: mDNS + SSDP + UPnP + Miracast','info');
-  setStatus('SCANNING','scan');
-  $('btnScan').disabled=true;
+  $('rBlip').style.display = 'none';
+  $('rBlip2').style.display = 'none';
+  $('devList').innerHTML = '<div class="no-dev">Buscando dispositivos...</div>';
+  $('scanInfo').textContent = 'Varrendo a rede local...';
 
-  const toFind=[...TV_DB].sort(()=>Math.random()-.5).slice(0,rand(2,5));
-  const blips=['rb1','rb2','rb3','rb4'];
-  let delay=700;
+  let found = 0;
+  const devices = mockDevices.slice(0, Math.floor(2 + Math.random() * 4));
 
-  toFind.forEach((tv,i)=>{
-    setTimeout(()=>{
-      S.foundDevices.push(tv);
-      renderDevList();
-      if(blips[i])$(blips[i]).style.display='block';
-      log(`Encontrado: ${tv.name} (${tv.ip}) — ${tv.protocol}`,'ok');
-    },delay);
-    delay+=rand(500,900);
-  });
+  devices.forEach((dev, i) => {
+    setTimeout(() => {
+      found++;
+      if (found === 1) {
+        $('devList').innerHTML = '';
+        $('rBlip').style.display = 'block';
+      }
+      if (found === 2) $('rBlip2').style.display = 'block';
 
-  setTimeout(()=>{
-    S.scanning=false;
-    $('rSweep').classList.remove('go');
-    $('btnScan').disabled=false;
-    log(`Scan concluído: ${S.foundDevices.length} dispositivo(s)`,'ok');
-    setStatus(S.foundDevices.length||S.connected?'DISPOSITIVOS ENCONTRADOS':'OFFLINE',S.foundDevices.length?'scan':'');
-    if(S.foundDevices.length)$('btnConnectSel').disabled=false;
-  },delay+300);
-}
-S.scanning=false;
-
-$('btnScan').addEventListener('click',startScan);
-$('btnAutoScan').addEventListener('click',()=>{
-  S.autoScan=!S.autoScan;
-  $('btnAutoScan').textContent=S.autoScan?'🛑 Parar Auto':'⚡ Auto-Scan';
-  if(S.autoScan){startScan();S.autoScanTimer=setInterval(startScan,15000);}
-  else{clearInterval(S.autoScanTimer);log('Auto-scan desativado','warn');}
-});
-
-let selTv=null;
-function renderDevList(){
-  const el=$('devList');
-  if(!S.foundDevices.length){
-    el.innerHTML='<div class="no-dev">Aguardando scan...<br>Clique em "Iniciar Scan" para buscar Smart TVs na rede.</div>';
-    return;
-  }
-  el.innerHTML=S.foundDevices.map(tv=>{
-    const isConn=S.connected?.id===tv.id;
-    const isSel=selTv?.id===tv.id;
-    const bars=[1,2,3,4].map(n=>`<div class="sig-b" style="opacity:${n<=tv.signal?1:.2}"></div>`).join('');
-    return `
-      <div class="dev-item ${isConn?'connected':''}" data-tvid="${tv.id}" style="${isSel?'border-color:var(--cyan)':''}">
-        <div class="dev-ico">${tvIcons[tv.type]||'📺'}</div>
+      const el = document.createElement('div');
+      el.className = 'dev-item';
+      el.innerHTML = `
+        <div class="dev-ico">${dev.type}</div>
         <div class="dev-info">
-          <div class="dev-name">${tv.name}</div>
-          <div class="dev-meta">${tv.ip} · ${tv.protocol}</div>
+          <div class="dev-name">${dev.name}</div>
+          <div class="dev-meta">${dev.ip}</div>
         </div>
-        <div class="sig">${bars}</div>
-        <span class="badge ${isConn?'badge-g':'badge-c'}">${isConn?'ON':'OK'}</span>
-      </div>`;
-  }).join('');
-  el.querySelectorAll('.dev-item').forEach(d=>{
-    d.addEventListener('click',()=>{
-      selTv=S.foundDevices.find(t=>t.id===d.dataset.tvid);
-      renderDevList();
-    });
+        <div class="sig">${'<div class="sig-b"></div>'.repeat(dev.sig)}</div>
+        <span class="badge badge-c">CAST</span>`;
+      el.addEventListener('click', () => {
+        el.classList.toggle('connected');
+        el.querySelector('.badge').className = el.classList.contains('connected') ? 'badge badge-g' : 'badge badge-c';
+        el.querySelector('.badge').textContent = el.classList.contains('connected') ? 'ON' : 'CAST';
+        toast(el.classList.contains('connected') ? `Conectado: ${dev.name}` : `Desconectado: ${dev.name}`,
+              el.classList.contains('connected') ? 'ok' : 'info');
+      });
+      $('devList').appendChild(el);
+      $('scanInfo').textContent = `${found} dispositivo(s) encontrado(s)`;
+    }, (i + 1) * 700);
+  });
+
+  setTimeout(() => {
+    $('rSweep').classList.remove('go');
+    $('btnScan').textContent = '📡 Buscar Novamente';
+    $('btnScan').disabled = false;
+    scanning = false;
+    if (found === 0) {
+      $('devList').innerHTML = '<div class="no-dev">Nenhum dispositivo encontrado</div>';
+      $('scanInfo').textContent = 'Tente novamente ou verifique a rede';
+    }
+    slog(`Scan concluído: ${found} dispositivo(s)`, 'ok');
+  }, devices.length * 700 + 800);
+});
+
+// ═══════════════════════════════════════════════
+// PARSER M3U — ROBUSTO
+// ═══════════════════════════════════════════════
+function parseM3U(text) {
+  const lines = text.split(/\r?\n/);
+  const result = [];
+
+  // Verifica se é M3U válido
+  if (!lines[0].trim().startsWith('#EXTM3U')) {
+    ilog('Aviso: arquivo sem header #EXTM3U, tentando parsear mesmo assim...', 'warn');
+  }
+
+  let currentMeta = null;
+
+  for (let i = 0; i < lines.length; i++) {
+    const line = lines[i].trim();
+    if (!line) continue;
+
+    if (line.startsWith('#EXTINF:')) {
+      // Parseia a linha de metadados
+      currentMeta = parseExtinf(line);
+    } else if (!line.startsWith('#')) {
+      // É uma URL
+      if (line.startsWith('http') || line.startsWith('rtmp') || line.startsWith('rtsp') || line.startsWith('udp') || line.startsWith('rtp')) {
+        const ch = currentMeta || { name: `Canal ${result.length + 1}`, group: 'Geral', logo: '', id: '' };
+        ch.url = line;
+        ch.index = result.length;
+        result.push(ch);
+        currentMeta = null;
+      }
+    }
+  }
+
+  return result;
+}
+
+function parseExtinf(line) {
+  const ch = { name: '', group: 'Geral', logo: '', id: '' };
+
+  // Extrai atributos: tvg-name, tvg-logo, tvg-id, group-title
+  const attrs = [
+    { key: 'tvg-name', prop: 'tvgName' },
+    { key: 'tvg-logo', prop: 'logo' },
+    { key: 'tvg-id', prop: 'id' },
+    { key: 'group-title', prop: 'group' },
+    { key: 'tvg-group', prop: 'group' },
+  ];
+
+  attrs.forEach(({ key, prop }) => {
+    // Suporta aspas simples e duplas
+    const regexDouble = new RegExp(`${key}="([^"]*)"`, 'i');
+    const regexSingle = new RegExp(`${key}='([^']*)'`, 'i');
+    const m = line.match(regexDouble) || line.match(regexSingle);
+    if (m && m[1].trim()) ch[prop] = m[1].trim();
+  });
+
+  // Nome: tenta tvg-name primeiro, depois o que vem depois da vírgula
+  if (!ch.tvgName) {
+    const commaIdx = line.lastIndexOf(',');
+    if (commaIdx !== -1) {
+      ch.name = line.substring(commaIdx + 1).trim();
+    }
+  } else {
+    ch.name = ch.tvgName;
+  }
+
+  // Fallback de nome
+  if (!ch.name) ch.name = 'Canal sem nome';
+
+  // Normaliza grupo
+  if (!ch.group || ch.group === '') ch.group = 'Geral';
+
+  return ch;
+}
+
+// ═══════════════════════════════════════════════
+// IPTV — CARREGAR E EXIBIR
+// ═══════════════════════════════════════════════
+function loadChannels(text, source) {
+  ilog(`Parseando lista de ${source}...`, 'info');
+  try {
+    channels = parseM3U(text);
+    if (channels.length === 0) {
+      ilog('Nenhum canal encontrado. Verifique o formato da lista.', 'err');
+      toast('Nenhum canal encontrado na lista', 'err');
+      return;
+    }
+    ilog(`${channels.length} canais carregados com sucesso!`, 'ok');
+    toast(`${channels.length} canais carregados!`, 'ok');
+    updateIPTVInfo();
+    buildCatFilters();
+    renderChannels(channels);
+    $('btnClearList').style.display = '';
+  } catch(e) {
+    ilog('Erro ao parsear: ' + e.message, 'err');
+    toast('Erro ao parsear a lista M3U', 'err');
+  }
+}
+
+function updateIPTVInfo() {
+  const cats = new Set(channels.map(c => c.group));
+  const withLogo = channels.filter(c => c.logo).length;
+  $('infoTotal').textContent = channels.length;
+  $('infoCats').textContent = cats.size;
+  $('infoLogos').textContent = withLogo;
+  $('infoStatus').textContent = 'Carregada ✓';
+  $('infoStatus').style.color = 'var(--green)';
+  $('chCount').textContent = `(${channels.length})`;
+}
+
+function buildCatFilters() {
+  const cats = ['todos', ...new Set(channels.map(c => c.group).filter(Boolean).sort())];
+  const bar = $('catFilters');
+  bar.innerHTML = '';
+  cats.forEach(cat => {
+    const btn = document.createElement('button');
+    btn.className = 'filt-btn' + (cat === 'todos' ? ' active' : '');
+    btn.textContent = cat === 'todos' ? `Todos (${channels.length})` : cat;
+    btn.onclick = function() { setCat(cat, this); };
+    bar.appendChild(btn);
   });
 }
 
-$('btnConnectSel').addEventListener('click',()=>{
-  const tv=selTv||S.foundDevices[0];
-  if(!tv)return;
-  const m=showConnectingModal('📺 Conectando TV...','Estabelecendo conexão com '+tv.name+' via '+tv.protocol,()=>{
-    S.connected=tv;
-    renderDevList();
-    updateCastTargets();
-    $('btnConnectSel').disabled=true;
-    $('btnDiscScan').disabled=false;
-    setStatus('CONECTADO','on');
-    log(`Conectado: ${tv.name}`,'ok');
-    toast('📺 Conectado: '+tv.name,'ok');
-  });
-  setTimeout(()=>m.finish('✅','TV Conectada!',tv.name+' pronto para receber stream.'),rand(1500,2800));
-});
-
-$('btnDiscScan').addEventListener('click',()=>{
-  S.connected=null;selTv=null;
-  renderDevList();updateCastTargets();
-  $('btnDiscScan').disabled=true;$('btnConnectSel').disabled=false;
-  setStatus('OFFLINE','');log('TV desconectada','warn');toast('TV desconectada','info');
-});
-
-// ═══════════════════════════════════════════
-// IPTV
-// ═══════════════════════════════════════════
-const DEMO_CHANNELS=[
-  {name:'CNN Brasil',cat:'Notícias',ico:'📰',url:'#',live:true},
-  {name:'Globo HD',cat:'Entretenimento',ico:'📺',url:'#',live:true},
-  {name:'Record HD',cat:'Entretenimento',ico:'🎬',url:'#',live:true},
-  {name:'ESPN Brasil',cat:'Esportes',ico:'⚽',url:'#',live:true},
-  {name:'Discovery Channel',cat:'Documentários',ico:'🌍',url:'#',live:true},
-  {name:'Cartoon Network',cat:'Infantil',ico:'🎭',url:'#',live:true},
-  {name:'HBO',cat:'Cinema',ico:'🎥',url:'#',live:true},
-  {name:'National Geographic',cat:'Documentários',ico:'🦁',url:'#',live:true},
-  {name:'Fox Sports',cat:'Esportes',ico:'🏆',url:'#',live:true},
-  {name:'Universal Channel',cat:'Séries',ico:'🎞️',url:'#',live:true},
-];
-
-$('btnAddIptv').addEventListener('click',()=>{
-  const url=$('iptvUrl').value.trim();
-  const name=$('iptvName').value.trim()||'Lista '+(S.iptvLists.length+1);
-  if(!url){toast('Digite a URL da lista M3U','err');return;}
-  const list={id:Date.now(),name,url,channels:DEMO_CHANNELS.slice(0,rand(4,10))};
-  S.iptvLists.push(list);
-  S.iptvChannels=[...S.iptvChannels,...list.channels];
-  renderIptvLists();renderChannels();
-  $('iptvUrl').value='';$('iptvName').value='';
-  toast('✅ Lista adicionada: '+name,'ok');
-  log('Lista IPTV adicionada: '+name,'ok');
-});
-
-$('m3uFile').addEventListener('change',e=>{
-  const f=e.target.files[0];if(!f)return;
-  const list={id:Date.now(),name:f.name.replace('.m3u',''),url:'local',channels:DEMO_CHANNELS.slice(0,rand(5,10))};
-  S.iptvLists.push(list);
-  S.iptvChannels=[...S.iptvChannels,...list.channels];
-  renderIptvLists();renderChannels();
-  toast('📄 Arquivo importado: '+f.name,'ok');
-});
-
-function renderIptvLists(){
-  const el=$('iptvLists');
-  if(!S.iptvLists.length){el.innerHTML='<div style="font-size:12px;color:var(--text2);text-align:center;padding:12px">Nenhuma lista adicionada</div>';return;}
-  el.innerHTML=S.iptvLists.map(l=>`
-    <div style="display:flex;align-items:center;gap:10px;padding:10px 12px;background:var(--surface);border:1px solid var(--border);border-radius:9px;">
-      <span style="font-size:20px">📋</span>
-      <div style="flex:1">
-        <div style="font-size:13px;font-weight:600;color:var(--white)">${l.name}</div>
-        <div style="font-size:10px;color:var(--text2);font-family:'Share Tech Mono',monospace">${l.channels.length} canais</div>
-      </div>
-      <button class="btn btn-red btn-sm" onclick="removeList(${l.id})">✕</button>
-    </div>
-  `).join('');
+function setCat(cat, el) {
+  currentCat = cat;
+  document.querySelectorAll('.filt-btn').forEach(b => b.classList.remove('active'));
+  el.classList.add('active');
+  filterChannels();
 }
 
-window.removeList=function(id){
-  S.iptvLists=S.iptvLists.filter(l=>l.id!==id);
-  S.iptvChannels=S.iptvLists.flatMap(l=>l.channels);
-  renderIptvLists();renderChannels();
-};
+function filterChannels() {
+  const q = ($('chSearch').value || '').toLowerCase().trim();
+  let list = channels;
+  if (currentCat !== 'todos') list = list.filter(c => c.group === currentCat);
+  if (q) list = list.filter(c => c.name.toLowerCase().includes(q));
+  renderChannels(list);
+}
 
-function renderChannels(filter=''){
-  const el=$('chList');
-  const chs=S.iptvChannels.filter(c=>c.name.toLowerCase().includes(filter.toLowerCase()));
-  if(!chs.length){
-    el.innerHTML='<div style="font-size:12px;color:var(--text2);text-align:center;padding:20px">'+(S.iptvChannels.length?'Nenhum canal encontrado':'Adicione uma lista IPTV para ver os canais')+'</div>';
+function renderChannels(list) {
+  const el = $('chList');
+
+  if (list.length === 0) {
+    el.innerHTML = '<div class="ch-empty"><div class="ce-icon">🔍</div><p>Nenhum canal encontrado.</p></div>';
     return;
   }
-  el.innerHTML=chs.map((ch,i)=>`
-    <div class="iptv-channel ${S.currentChannel===ch?'playing':''}" data-chi="${i}">
-      <div class="iptv-ico">${ch.ico}</div>
-      <div style="flex:1">
-        <div class="iptv-name">${ch.name}</div>
-        <div class="iptv-cat">${ch.cat}</div>
+
+  el.innerHTML = '';
+  list.forEach(ch => {
+    const div = document.createElement('div');
+    div.className = 'iptv-channel';
+    div.dataset.url = ch.url;
+    div.dataset.name = ch.name;
+
+    const logoHtml = ch.logo
+      ? `<img src="${ch.logo}" alt="" onerror="this.parentElement.textContent='📺'">`
+      : '📺';
+
+    div.innerHTML = `
+      <div class="iptv-ico">${logoHtml}</div>
+      <div style="flex:1;min-width:0;">
+        <div class="iptv-name" style="overflow:hidden;text-overflow:ellipsis;white-space:nowrap;">${ch.name}</div>
+        <div class="iptv-cat">${ch.group}</div>
       </div>
-      ${ch.live?'<span class="tag tag-live">AO VIVO</span>':''}
-    </div>
-  `).join('');
-  el.querySelectorAll('.iptv-channel').forEach((el2,i)=>{
-    el2.addEventListener('click',()=>{
-      S.currentChannel=chs[i];
-      renderChannels(filter);
-      $('iptvNowPlaying').innerHTML=`<strong style="color:var(--white)">${chs[i].ico} ${chs[i].name}</strong><br><span style="font-size:11px">${chs[i].cat} — Ao Vivo</span>`;
-      $('btnIptvCast').disabled=false;
-      log('Canal: '+chs[i].name,'ok');
+      <span class="tag tag-live">AO VIVO</span>`;
+
+    div.addEventListener('click', () => playChannel(ch, div));
+    el.appendChild(div);
+  });
+}
+
+function playChannel(ch, el) {
+  // Remove playing de outros
+  document.querySelectorAll('.iptv-channel').forEach(c => c.classList.remove('playing'));
+  el.classList.add('playing');
+
+  const v = $('iptvVid');
+  $('iptvOverlay').classList.add('gone');
+  $('iptvPlayingNow').style.display = 'flex';
+  $('iptvChName').textContent = ch.name;
+
+  ilog(`Carregando: ${ch.name}`, 'info');
+
+  // Tenta HLS via hls.js se disponível, senão src direto
+  if (typeof Hls !== 'undefined' && Hls.isSupported() && ch.url.includes('.m3u8')) {
+    const hls = new Hls();
+    hls.loadSource(ch.url);
+    hls.attachMedia(v);
+    hls.on(Hls.Events.MANIFEST_PARSED, () => { v.play(); ilog(`Reproduzindo (HLS): ${ch.name}`, 'ok'); });
+    hls.on(Hls.Events.ERROR, (e, data) => { ilog(`Erro HLS: ${data.type}`, 'err'); });
+    currentStream = hls;
+  } else {
+    if (currentStream && currentStream.destroy) currentStream.destroy();
+    currentStream = null;
+    v.src = ch.url;
+    v.load();
+    v.play().catch(e => {
+      ilog(`Aviso ao reproduzir: ${e.message}`, 'warn');
     });
-  });
+    v.oncanplay = () => ilog(`Reproduzindo: ${ch.name}`, 'ok');
+    v.onerror = () => {
+      ilog(`Erro ao carregar stream. Verifique CORS ou o link.`, 'err');
+      toast('Erro ao carregar canal — tente outro', 'err');
+    };
+  }
+
+  toast(`▶ ${ch.name}`, 'ok');
 }
 
-$('iptvSearch').addEventListener('input',e=>renderChannels(e.target.value));
-$('btnIptvCast').addEventListener('click',()=>{
-  if(!S.connected&&!S.peers.length){toast('Conecte uma TV ou dispositivo primeiro!','err');return;}
-  toast('📡 Transmitindo: '+S.currentChannel?.name,'ok');
-  log('IPTV → '+S.currentChannel?.name+' transmitido','ok');
-  setStatus('CASTING','on');
+// Carregar via URL
+$('btnLoadUrl').addEventListener('click', async () => {
+  const url = $('m3uUrl').value.trim();
+  if (!url) { toast('Insira uma URL válida', 'err'); return; }
+  if (!url.startsWith('http')) { toast('URL deve começar com http/https', 'err'); return; }
+
+  $('btnLoadUrl').textContent = '⏳';
+  $('btnLoadUrl').disabled = true;
+  ilog(`Baixando lista de: ${url}`, 'info');
+
+  try {
+    // Tenta proxy CORS se necessário
+    const proxies = [
+      url,
+      `https://api.allorigins.win/raw?url=${encodeURIComponent(url)}`,
+      `https://corsproxy.io/?${encodeURIComponent(url)}`,
+    ];
+
+    let text = null;
+    for (const proxyUrl of proxies) {
+      try {
+        const resp = await fetch(proxyUrl, { signal: AbortSignal.timeout(15000) });
+        if (resp.ok) {
+          text = await resp.text();
+          if (text.includes('#EXTM3U') || text.includes('#EXTINF')) break;
+          text = null; // não é M3U válido, tenta próximo proxy
+        }
+      } catch(e) { continue; }
+    }
+
+    if (!text) throw new Error('Não foi possível baixar a lista (verifique a URL e CORS)');
+    loadChannels(text, url);
+
+  } catch(e) {
+    ilog('Erro ao baixar: ' + e.message, 'err');
+    toast('Erro ao baixar lista: ' + e.message, 'err');
+  } finally {
+    $('btnLoadUrl').textContent = '⬇ Carregar';
+    $('btnLoadUrl').disabled = false;
+  }
 });
 
-// ═══════════════════════════════════════════
-// MEDIA TAB
-// ═══════════════════════════════════════════
-$('mediaFile').addEventListener('change',e=>{
-  const f=e.target.files[0];
-  if(f) loadVideoFile(f,$('mediaVid'),null);
-  $('btnMediaCast').disabled=false;
+// Carregar via arquivo
+$('m3uFile').addEventListener('change', e => {
+  const file = e.target.files[0];
+  if (!file) return;
+  const ext = file.name.toLowerCase();
+  if (!ext.endsWith('.m3u') && !ext.endsWith('.m3u8') && !ext.endsWith('.txt')) {
+    toast('Arquivo deve ser .m3u, .m3u8 ou .txt', 'err');
+    return;
+  }
+  ilog(`Lendo arquivo: ${file.name} (${(file.size/1024).toFixed(1)} KB)`, 'info');
+  const reader = new FileReader();
+  reader.onload = ev => loadChannels(ev.target.result, file.name);
+  reader.onerror = () => { ilog('Erro ao ler arquivo', 'err'); toast('Erro ao ler arquivo', 'err'); };
+  reader.readAsText(file, 'UTF-8');
 });
 
-['mediaDrop'].forEach(id=>{
-  const dz=$(id);
-  dz.addEventListener('dragover',e=>{e.preventDefault();dz.classList.add('drag');});
-  dz.addEventListener('dragleave',()=>dz.classList.remove('drag'));
-  dz.addEventListener('drop',e=>{
-    e.preventDefault();dz.classList.remove('drag');
-    const f=e.dataTransfer.files[0];
-    if(f) loadVideoFile(f,$('mediaVid'),null);
-    $('btnMediaCast').disabled=false;
-  });
+// Drag & drop
+const dz = $('dropZone');
+dz.addEventListener('dragover', e => { e.preventDefault(); dz.classList.add('drag'); });
+dz.addEventListener('dragleave', () => dz.classList.remove('drag'));
+dz.addEventListener('drop', e => {
+  e.preventDefault();
+  dz.classList.remove('drag');
+  const file = e.dataTransfer.files[0];
+  if (file) {
+    const reader = new FileReader();
+    reader.onload = ev => loadChannels(ev.target.result, file.name);
+    reader.readAsText(file, 'UTF-8');
+  }
 });
 
-$('btnMediaCast').addEventListener('click',()=>{
-  if(!S.connected&&!S.peers.length){toast('Conecte uma TV primeiro!','err');return;}
-  toast('📡 Mídia transmitida!','ok');
-  log('Mídia → TV','ok');S.casting=true;setStatus('CASTING','on');
+$('btnClearList').addEventListener('click', () => {
+  channels = [];
+  $('chList').innerHTML = '<div class="ch-empty"><div class="ce-icon">📺</div><p>Lista limpa.<br>Adicione uma nova lista M3U.</p></div>';
+  $('catFilters').innerHTML = '<button class="filt-btn active" onclick="setCat(\'todos\',this)">Todos</button>';
+  $('infoTotal').textContent = '0';
+  $('infoCats').textContent = '0';
+  $('infoLogos').textContent = '0';
+  $('infoStatus').textContent = 'Sem lista';
+  $('infoStatus').style.color = 'var(--text2)';
+  $('chCount').textContent = '';
+  $('btnClearList').style.display = 'none';
+  $('iptvPlayingNow').style.display = 'none';
+  $('iptvOverlay').classList.remove('gone');
+  $('iptvVid').src = '';
+  ilog('Lista limpa', 'warn');
+  toast('Lista removida', 'info');
 });
 
-$('btnMediaStop').addEventListener('click',()=>{
-  $('mediaVid').pause();$('mediaVid').src='';
-  $('btnMediaCast').disabled=true;
+// ═══════════════════════════════════════════════
+// MÍDIA
+// ═══════════════════════════════════════════════
+$('mediaFile').addEventListener('change', e => {
+  const file = e.target.files[0];
+  if (!file) return;
+  const url = URL.createObjectURL(file);
+  vid.src = url;
+  vid.load();
+  vid.play();
+  $('prevOverlay').classList.add('gone');
+  addMediaHistory(file.name, url);
+  toast(`Reproduzindo: ${file.name}`, 'ok');
+  slog(`Arquivo carregado: ${file.name}`, 'ok');
 });
 
-function addHistory(name){
-  S.mediaHistory.unshift({name,ts:Date.now()});
-  if(S.mediaHistory.length>8)S.mediaHistory.pop();
-  const el=$('mediaHistory');
-  el.innerHTML=S.mediaHistory.map(h=>`
-    <div style="display:flex;align-items:center;gap:10px;padding:8px 0;border-bottom:1px solid var(--border);">
-      <span>🎬</span>
-      <div style="flex:1;font-size:13px;color:var(--white);overflow:hidden;text-overflow:ellipsis;white-space:nowrap">${h.name}</div>
-    </div>
-  `).join('');
+$('btnLoadMedia').addEventListener('click', () => {
+  const url = $('mediaUrl').value.trim();
+  if (!url) return;
+  vid.src = url;
+  vid.load();
+  vid.play().catch(() => {});
+  $('prevOverlay').classList.add('gone');
+  addMediaHistory(url, url);
+  toast('Stream carregado!', 'ok');
+});
+
+function addMediaHistory(name, url) {
+  const h = $('mediaHistory');
+  if (h.querySelector('.no-dev')) h.innerHTML = '';
+  const d = document.createElement('div');
+  d.style.cssText = 'padding:10px;background:var(--surface);border:1px solid var(--border);border-radius:8px;cursor:pointer;';
+  d.innerHTML = `<div style="font-weight:600;color:var(--white);font-size:13px;overflow:hidden;text-overflow:ellipsis;white-space:nowrap;">${name}</div>`;
+  d.addEventListener('click', () => { vid.src = url; vid.play(); $('prevOverlay').classList.add('gone'); });
+  h.prepend(d);
 }
 
-// ═══════════════════════════════════════════
-// DROP ZONES
-// ═══════════════════════════════════════════
-['m3uDrop'].forEach(id=>{
-  const dz=$(id);
-  dz.addEventListener('dragover',e=>{e.preventDefault();dz.classList.add('drag');});
-  dz.addEventListener('dragleave',()=>dz.classList.remove('drag'));
-  dz.addEventListener('drop',e=>{e.preventDefault();dz.classList.remove('drag');});
-});
+// ═══════════════════════════════════════════════
+// HLS.JS (carrega dinamicamente se precisar)
+// ═══════════════════════════════════════════════
+const hlsScript = document.createElement('script');
+hlsScript.src = 'https://cdn.jsdelivr.net/npm/hls.js@latest/dist/hls.min.js';
+document.head.appendChild(hlsScript);
 
-// ═══════════════════════════════════════════
+// ═══════════════════════════════════════════════
 // INIT
-// ═══════════════════════════════════════════
+// ═══════════════════════════════════════════════
 initId();
-renderRecent();
-log('Screen TV iniciado com sucesso','ok');
-log('Sistema pronto. ID: '+S.myId,'ok');
+slog('Screen TV inicializado', 'ok');
+slog('Aguardando conexões...', 'info');
+ilog('IPTV engine pronto', 'ok');
+ilog('Suporte HLS carregando...', 'info');
 </script>
 </body>
 </html>
