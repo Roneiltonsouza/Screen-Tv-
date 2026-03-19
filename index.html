@@ -228,6 +228,32 @@ input[type=range]::-webkit-slider-thumb{-webkit-appearance:none;width:14px;heigh
 .search-inp::before{content:'🔍';position:absolute;left:12px;top:50%;transform:translateY(-50%);font-size:14px;pointer-events:none;}
 .playing-now{display:flex;align-items:center;gap:8px;padding:8px 12px;background:rgba(0,255,157,.06);border:1px solid rgba(0,255,157,.25);border-radius:8px;margin-bottom:12px;font-size:12px;color:var(--green);font-family:'Share Tech Mono',monospace;}
 .playing-now .pn-dot{width:6px;height:6px;border-radius:50%;background:var(--green);animation:blink 1s infinite;flex-shrink:0;}
+
+/* Listas Salvas */
+.saved-list-item{display:flex;align-items:center;gap:10px;padding:10px 12px;background:var(--surface);border:1px solid var(--border);border-radius:9px;transition:all .18s;animation:fadeSlide .25s ease;}
+.saved-list-item:hover{border-color:var(--cyan);}
+.saved-list-item.active-list{border-color:var(--green);background:rgba(0,255,157,.04);}
+.sl-icon{font-size:18px;flex-shrink:0;}
+.sl-info{flex:1;min-width:0;}
+.sl-name{font-size:13px;font-weight:700;color:var(--white);overflow:hidden;text-overflow:ellipsis;white-space:nowrap;}
+.sl-meta{font-size:10px;color:var(--text2);font-family:'Share Tech Mono',monospace;margin-top:2px;}
+.sl-actions{display:flex;gap:6px;flex-shrink:0;}
+.sl-btn{width:28px;height:28px;border-radius:7px;border:1px solid var(--border);background:var(--card);color:var(--text2);font-size:13px;cursor:pointer;display:flex;align-items:center;justify-content:center;transition:all .18s;}
+.sl-btn:hover{border-color:var(--cyan);color:var(--cyan);}
+.sl-btn.del:hover{border-color:var(--red);color:var(--red);}
+.sl-btn.load-btn:hover{border-color:var(--green);color:var(--green);}
+.save-name-row{display:flex;gap:8px;margin-top:10px;}
+.save-name-row .inp{flex:1;}
+
+/* Modal confirmação */
+.modal-bg{position:fixed;inset:0;background:rgba(0,0,0,.75);display:flex;align-items:center;justify-content:center;z-index:500;backdrop-filter:blur(4px);opacity:0;pointer-events:none;transition:opacity .25s;}
+.modal-bg.open{opacity:1;pointer-events:all;}
+.modal{background:var(--card);border:1px solid var(--border2);border-radius:16px;padding:28px;width:340px;max-width:90vw;animation:popIn .25s ease;}
+@keyframes popIn{from{transform:scale(.9);opacity:0}to{transform:scale(1);opacity:1}}
+.modal h2{font-size:17px;font-weight:700;color:var(--white);margin-bottom:8px;}
+.modal p{font-size:13px;color:var(--text2);margin-bottom:20px;line-height:1.6;}
+.modal-btns{display:flex;gap:10px;}
+.modal-btns .btn{flex:1;justify-content:center;}
 </style>
 </head>
 <body>
@@ -439,36 +465,61 @@ input[type=range]::-webkit-slider-thumb{-webkit-appearance:none;width:14px;heigh
 
           <!-- Painel lateral IPTV -->
           <div class="flex-col">
+
+            <!-- Carregar Lista -->
             <div class="card">
               <div class="card-title">📂 Carregar Lista M3U</div>
 
-              <!-- URL M3U -->
               <label class="lbl">URL da Lista M3U</label>
               <div class="m3u-input-area">
                 <input class="inp" id="m3uUrl" placeholder="http://... ou https://...">
                 <button class="btn btn-cyan btn-sm" id="btnLoadUrl">⬇ Carregar</button>
               </div>
 
-              <!-- Arquivo M3U -->
               <label class="lbl" style="margin-top:10px;">Arquivo M3U / M3U8</label>
               <div class="drop-z" id="dropZone">
                 <input type="file" id="m3uFile" accept=".m3u,.m3u8,.txt">
                 <div class="di">📁</div>
                 <p><strong>Clique ou arraste</strong> seu arquivo .m3u aqui</p>
               </div>
+            </div>
 
-              <div class="mt12">
-                <button class="btn btn-red btn-full btn-sm" id="btnClearList" style="display:none;">🗑 Limpar Lista</button>
+            <!-- Salvar Lista -->
+            <div class="card" id="saveListCard" style="display:none;">
+              <div class="card-title">💾 Salvar Lista Atual</div>
+              <label class="lbl">Nome da Lista</label>
+              <div class="save-name-row">
+                <input class="inp" id="saveListName" placeholder="Ex: Canais Brasil, Filmes HD...">
+                <button class="btn btn-green btn-sm" id="btnSaveList">💾 Salvar</button>
+              </div>
+              <div class="mt8" style="font-family:'Share Tech Mono',monospace;font-size:10px;color:var(--text2);">
+                <span id="infoTotal2">0</span> canais · <span id="infoCats2">0</span> categorias
               </div>
             </div>
 
+            <!-- Listas Salvas -->
             <div class="card">
-              <div class="card-title">📊 Info da Lista</div>
-              <div id="m3uInfo" style="font-family:'Share Tech Mono',monospace;font-size:11px;color:var(--text2);line-height:2;">
+              <div class="card-title">📚 Listas Salvas <span id="savedCount" style="color:var(--cyan);font-size:11px;"></span></div>
+              <div id="savedListsContainer">
+                <div class="ch-empty" style="padding:20px 10px;">
+                  <div class="ce-icon" style="font-size:28px;">📂</div>
+                  <p style="font-size:12px;">Nenhuma lista salva ainda.<br>Carregue e salve uma lista M3U.</p>
+                </div>
+              </div>
+            </div>
+
+            <!-- Info + Log -->
+            <div class="card">
+              <div class="card-title">📊 Lista Ativa</div>
+              <div style="font-family:'Share Tech Mono',monospace;font-size:11px;color:var(--text2);line-height:2;">
+                <div>NOME: <span id="infoName" style="color:var(--white);">—</span></div>
                 <div>CANAIS: <span id="infoTotal" style="color:var(--cyan);">0</span></div>
                 <div>CATEGORIAS: <span id="infoCats" style="color:var(--cyan);">0</span></div>
                 <div>COM LOGO: <span id="infoLogos" style="color:var(--cyan);">0</span></div>
                 <div>STATUS: <span id="infoStatus" style="color:var(--text2);">Sem lista</span></div>
+              </div>
+              <div class="mt8">
+                <button class="btn btn-red btn-full btn-sm" id="btnClearList" style="display:none;">🗑 Descarregar Lista</button>
               </div>
             </div>
 
@@ -513,6 +564,18 @@ input[type=range]::-webkit-slider-thumb{-webkit-appearance:none;width:14px;heigh
 
 <!-- Toast -->
 <div class="toast" id="toast"></div>
+
+<!-- Modal Excluir -->
+<div class="modal-bg" id="modalDelete">
+  <div class="modal">
+    <h2>🗑 Excluir Lista</h2>
+    <p id="modalDeleteMsg">Tem certeza que deseja excluir esta lista?</p>
+    <div class="modal-btns">
+      <button class="btn btn-ghost" id="modalCancel">Cancelar</button>
+      <button class="btn btn-red" id="modalConfirm">Excluir</button>
+    </div>
+  </div>
+</div>
 
 <script>
 // ═══════════════════════════════════════════════
@@ -854,10 +917,142 @@ function parseExtinf(line) {
 }
 
 // ═══════════════════════════════════════════════
+// LISTAS SALVAS — localStorage
+// ═══════════════════════════════════════════════
+let activeListId = null;
+let deleteTargetId = null;
+let pendingRawText = null;
+let pendingSource = null;
+
+function getSavedLists() {
+  try { return JSON.parse(localStorage.getItem('screentv_lists') || '[]'); }
+  catch(e) { return []; }
+}
+
+function saveLists(lists) {
+  localStorage.setItem('screentv_lists', JSON.stringify(lists));
+}
+
+function saveCurrentList(name) {
+  if (!channels.length) { toast('Carregue uma lista M3U primeiro', 'err'); return; }
+  if (!name.trim()) { toast('Digite um nome para a lista', 'err'); return; }
+  const lists = getSavedLists();
+  const id = Date.now().toString();
+  const cats = new Set(channels.map(c => c.group));
+  const withLogo = channels.filter(c => c.logo).length;
+  const entry = {
+    id,
+    name: name.trim(),
+    channels,
+    total: channels.length,
+    cats: cats.size,
+    logos: withLogo,
+    savedAt: new Date().toLocaleDateString('pt-BR'),
+    source: pendingSource || 'arquivo'
+  };
+  lists.unshift(entry);
+  saveLists(lists);
+  activeListId = id;
+  ilog(`Lista "${name}" salva com ${channels.length} canais`, 'ok');
+  toast(`Lista "${name}" salva!`, 'ok');
+  renderSavedLists();
+  $('saveListName').value = '';
+}
+
+function loadSavedList(id) {
+  const lists = getSavedLists();
+  const entry = lists.find(l => l.id === id);
+  if (!entry) { toast('Lista não encontrada', 'err'); return; }
+  channels = entry.channels;
+  activeListId = id;
+  pendingSource = entry.source;
+  ilog(`Carregando lista salva: "${entry.name}" (${entry.total} canais)`, 'ok');
+  toast(`Lista "${entry.name}" carregada!`, 'ok');
+  updateIPTVInfo(entry.name);
+  buildCatFilters();
+  renderChannels(channels);
+  renderSavedLists();
+  $('btnClearList').style.display = '';
+  $('saveListCard').style.display = 'none';
+}
+
+function confirmDeleteList(id, name) {
+  deleteTargetId = id;
+  $('modalDeleteMsg').textContent = `Excluir a lista "${name}"? Esta ação não pode ser desfeita.`;
+  $('modalDelete').classList.add('open');
+}
+
+function deleteList(id) {
+  let lists = getSavedLists();
+  const entry = lists.find(l => l.id === id);
+  lists = lists.filter(l => l.id !== id);
+  saveLists(lists);
+  if (activeListId === id) {
+    activeListId = null;
+    channels = [];
+    renderChannels([]);
+    buildCatFilters();
+    updateIPTVInfo('—');
+    $('btnClearList').style.display = 'none';
+    $('iptvPlayingNow').style.display = 'none';
+    $('iptvOverlay').classList.remove('gone');
+    $('iptvVid').src = '';
+  }
+  ilog(`Lista "${entry ? entry.name : id}" excluída`, 'warn');
+  toast('Lista excluída', 'info');
+  renderSavedLists();
+}
+
+function renderSavedLists() {
+  const lists = getSavedLists();
+  const container = $('savedListsContainer');
+  $('savedCount').textContent = lists.length ? `(${lists.length})` : '';
+
+  if (!lists.length) {
+    container.innerHTML = `<div class="ch-empty" style="padding:20px 10px;"><div class="ce-icon" style="font-size:28px;">📂</div><p style="font-size:12px;">Nenhuma lista salva ainda.<br>Carregue e salve uma lista M3U.</p></div>`;
+    return;
+  }
+
+  container.innerHTML = '';
+  lists.forEach(entry => {
+    const div = document.createElement('div');
+    div.className = 'saved-list-item' + (entry.id === activeListId ? ' active-list' : '');
+    div.style.marginBottom = '8px';
+    div.innerHTML = `
+      <div class="sl-icon">${entry.id === activeListId ? '▶' : '📋'}</div>
+      <div class="sl-info">
+        <div class="sl-name" title="${entry.name}">${entry.name}</div>
+        <div class="sl-meta">${entry.total} canais · ${entry.cats} cats · ${entry.savedAt}</div>
+      </div>
+      <div class="sl-actions">
+        <button class="sl-btn load-btn" title="Carregar lista">▶</button>
+        <button class="sl-btn del" title="Excluir lista">🗑</button>
+      </div>`;
+    div.querySelector('.load-btn').addEventListener('click', e => { e.stopPropagation(); loadSavedList(entry.id); });
+    div.querySelector('.del').addEventListener('click', e => { e.stopPropagation(); confirmDeleteList(entry.id, entry.name); });
+    div.addEventListener('click', () => loadSavedList(entry.id));
+    container.appendChild(div);
+  });
+}
+
+// Modal exclusão
+$('modalCancel').addEventListener('click', () => { $('modalDelete').classList.remove('open'); deleteTargetId = null; });
+$('modalConfirm').addEventListener('click', () => {
+  if (deleteTargetId) { deleteList(deleteTargetId); deleteTargetId = null; }
+  $('modalDelete').classList.remove('open');
+});
+$('modalDelete').addEventListener('click', e => { if (e.target === $('modalDelete')) { $('modalDelete').classList.remove('open'); deleteTargetId = null; } });
+
+// Salvar lista
+$('btnSaveList').addEventListener('click', () => saveCurrentList($('saveListName').value));
+$('saveListName').addEventListener('keydown', e => { if (e.key === 'Enter') saveCurrentList($('saveListName').value); });
+
+// ═══════════════════════════════════════════════
 // IPTV — CARREGAR E EXIBIR
 // ═══════════════════════════════════════════════
 function loadChannels(text, source) {
   ilog(`Parseando lista de ${source}...`, 'info');
+  pendingSource = source;
   try {
     channels = parseM3U(text);
     if (channels.length === 0) {
@@ -865,27 +1060,37 @@ function loadChannels(text, source) {
       toast('Nenhum canal encontrado na lista', 'err');
       return;
     }
-    ilog(`${channels.length} canais carregados com sucesso!`, 'ok');
-    toast(`${channels.length} canais carregados!`, 'ok');
-    updateIPTVInfo();
+    ilog(`${channels.length} canais carregados! Clique em "Salvar" para manter.`, 'ok');
+    toast(`${channels.length} canais carregados! Salve a lista.`, 'ok');
+    activeListId = null;
+    updateIPTVInfo('(não salva)');
     buildCatFilters();
     renderChannels(channels);
     $('btnClearList').style.display = '';
+    $('saveListCard').style.display = '';
+    // Sugere nome baseado na source
+    const suggested = source.replace(/\.(m3u8?|txt)$/i,'').replace(/^.*[\\/]/,'').substring(0,30);
+    $('saveListName').value = suggested !== source ? suggested : '';
+    $('infoTotal2').textContent = channels.length;
+    const cats2 = new Set(channels.map(c => c.group));
+    $('infoCats2').textContent = cats2.size;
+    renderSavedLists();
   } catch(e) {
     ilog('Erro ao parsear: ' + e.message, 'err');
     toast('Erro ao parsear a lista M3U', 'err');
   }
 }
 
-function updateIPTVInfo() {
+function updateIPTVInfo(name) {
   const cats = new Set(channels.map(c => c.group));
   const withLogo = channels.filter(c => c.logo).length;
+  if ($('infoName')) $('infoName').textContent = name || '—';
   $('infoTotal').textContent = channels.length;
   $('infoCats').textContent = cats.size;
   $('infoLogos').textContent = withLogo;
-  $('infoStatus').textContent = 'Carregada ✓';
-  $('infoStatus').style.color = 'var(--green)';
-  $('chCount').textContent = `(${channels.length})`;
+  $('infoStatus').textContent = channels.length ? 'Carregada ✓' : 'Sem lista';
+  $('infoStatus').style.color = channels.length ? 'var(--green)' : 'var(--text2)';
+  $('chCount').textContent = channels.length ? `(${channels.length})` : '';
 }
 
 function buildCatFilters() {
@@ -1061,20 +1266,18 @@ dz.addEventListener('drop', e => {
 
 $('btnClearList').addEventListener('click', () => {
   channels = [];
-  $('chList').innerHTML = '<div class="ch-empty"><div class="ce-icon">📺</div><p>Lista limpa.<br>Adicione uma nova lista M3U.</p></div>';
+  activeListId = null;
+  $('chList').innerHTML = '<div class="ch-empty"><div class="ce-icon">📺</div><p>Lista descarregada.<br>Selecione uma lista salva ou adicione uma nova.</p></div>';
   $('catFilters').innerHTML = '<button class="filt-btn active" onclick="setCat(\'todos\',this)">Todos</button>';
-  $('infoTotal').textContent = '0';
-  $('infoCats').textContent = '0';
-  $('infoLogos').textContent = '0';
-  $('infoStatus').textContent = 'Sem lista';
-  $('infoStatus').style.color = 'var(--text2)';
-  $('chCount').textContent = '';
+  updateIPTVInfo('—');
   $('btnClearList').style.display = 'none';
+  $('saveListCard').style.display = 'none';
   $('iptvPlayingNow').style.display = 'none';
   $('iptvOverlay').classList.remove('gone');
   $('iptvVid').src = '';
-  ilog('Lista limpa', 'warn');
-  toast('Lista removida', 'info');
+  renderSavedLists();
+  ilog('Lista descarregada', 'warn');
+  toast('Lista removida da visualização', 'info');
 });
 
 // ═══════════════════════════════════════════════
@@ -1125,10 +1328,18 @@ document.head.appendChild(hlsScript);
 // INIT
 // ═══════════════════════════════════════════════
 initId();
+renderSavedLists();
+updateIPTVInfo('—');
 slog('Screen TV inicializado', 'ok');
 slog('Aguardando conexões...', 'info');
 ilog('IPTV engine pronto', 'ok');
 ilog('Suporte HLS carregando...', 'info');
+
+// Auto-carrega última lista salva ativa
+const autoLists = getSavedLists();
+if (autoLists.length > 0) {
+  ilog(`${autoLists.length} lista(s) salva(s) encontrada(s)`, 'info');
+}
 </script>
 </body>
 </html>
