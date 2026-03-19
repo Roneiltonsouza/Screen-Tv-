@@ -537,6 +537,19 @@ input[type=range]::-webkit-slider-thumb{-webkit-appearance:none;width:14px;heigh
             </div>
           </div>
 
+          <!-- Salvar lista (coluna esquerda) -->
+          <div class="card" id="saveListCard" style="display:none;">
+            <div class="card-title">💾 Salvar Lista</div>
+            <label class="lbl">Nome da Lista</label>
+            <div class="save-row">
+              <input class="inp" id="saveListName" placeholder="Ex: Canais Brasil...">
+              <button class="btn btn-green btn-sm" id="btnSaveList">💾 Salvar</button>
+            </div>
+            <div style="font-family:'Share Tech Mono',monospace;font-size:10px;color:var(--text2);margin-top:6px;">
+              <span id="saveInfo">0 canais</span>
+            </div>
+          </div>
+
           <!-- Lista de canais -->
           <div class="card">
             <div class="card-title">📋 Canais <span id="chCount" style="color:var(--cyan);font-size:11px;"></span></div>
@@ -568,19 +581,6 @@ input[type=range]::-webkit-slider-thumb{-webkit-appearance:none;width:14px;heigh
               <input type="file" id="m3uFile" accept=".m3u,.m3u8,.txt">
               <div class="dz-icon" style="font-size:20px;">📁</div>
               <p style="font-size:12px;"><strong>Clique ou arraste</strong> o arquivo M3U</p>
-            </div>
-          </div>
-
-          <!-- Salvar lista -->
-          <div class="card" id="saveListCard" style="display:none;">
-            <div class="card-title">💾 Salvar Lista</div>
-            <label class="lbl">Nome da Lista</label>
-            <div class="save-row">
-              <input class="inp" id="saveListName" placeholder="Ex: Canais Brasil...">
-              <button class="btn btn-green btn-sm" id="btnSaveList">💾</button>
-            </div>
-            <div style="font-family:'Share Tech Mono',monospace;font-size:10px;color:var(--text2);margin-top:6px;">
-              <span id="saveInfo">0 canais</span>
             </div>
           </div>
 
