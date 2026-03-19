@@ -215,6 +215,14 @@ input[type=range]::-webkit-slider-thumb{-webkit-appearance:none;width:14px;heigh
   .id-big{font-size:26px;}
 }
 
+/* Galeria */
+.gallery-grid{display:grid;grid-template-columns:repeat(auto-fill,minmax(80px,1fr));gap:6px;}
+.gallery-item{aspect-ratio:1;border-radius:8px;overflow:hidden;cursor:pointer;border:2px solid transparent;transition:all .18s;position:relative;background:var(--surface);}
+.gallery-item:hover{border-color:var(--cyan);transform:scale(1.04);}
+.gallery-item.active{border-color:var(--green);box-shadow:0 0 10px rgba(0,255,157,.3);}
+.gallery-item img,.gallery-item video{width:100%;height:100%;object-fit:cover;}
+.gallery-item .gi-type{position:absolute;bottom:3px;right:3px;font-size:10px;background:rgba(0,0,0,.7);border-radius:3px;padding:1px 4px;color:#fff;}
+
 /* M3U URL input area */
 .m3u-input-area{display:flex;gap:8px;margin-bottom:12px;}
 .m3u-input-area .inp{flex:1;}
@@ -285,10 +293,9 @@ input[type=range]::-webkit-slider-thumb{-webkit-appearance:none;width:14px;heigh
   <div class="body-wrap">
     <div class="tabs">
       <div class="tab active" data-tab="mirror">🖥️ Espelhar</div>
+      <div class="tab" data-tab="iptv">📺 IPTV</div>
       <div class="tab" data-tab="connect">🔗 Conectar ID</div>
       <div class="tab" data-tab="scan">📡 Buscar TVs</div>
-      <div class="tab" data-tab="iptv">📺 IPTV</div>
-      <div class="tab" data-tab="media">🎬 Mídia</div>
     </div>
 
     <div class="panels">
@@ -296,14 +303,18 @@ input[type=range]::-webkit-slider-thumb{-webkit-appearance:none;width:14px;heigh
       <!-- TAB: ESPELHAR -->
       <div class="panel active" id="panel-mirror">
         <div class="g3">
+          <!-- Coluna principal: player + galeria -->
           <div class="flex-col">
+
+            <!-- Player principal -->
             <div class="card">
-              <div class="card-title">🎥 Transmissão ao Vivo</div>
+              <div class="card-title" id="mainSourceLabel">🎥 Transmissão ao Vivo</div>
               <div class="preview-wrap">
                 <video id="previewVid" autoplay muted playsinline></video>
+                <img id="previewImg" style="display:none;width:100%;height:100%;object-fit:contain;position:absolute;inset:0;background:#000;">
                 <div class="preview-overlay" id="prevOverlay">
                   <div class="preview-icon">🖥️</div>
-                  <p>Nenhuma fonte ativa<br><small>Espelhe a tela ou carregue mídia</small></p>
+                  <p>Nenhuma fonte ativa<br><small>Espelhe a tela, câmera ou selecione mídia abaixo</small></p>
                 </div>
               </div>
               <div class="prog-wrap">
@@ -324,6 +335,47 @@ input[type=range]::-webkit-slider-thumb{-webkit-appearance:none;width:14px;heigh
               </div>
             </div>
 
+            <!-- Seção Mídia integrada -->
+            <div class="card">
+              <div class="card-title">🎬 Mídia &amp; Galeria</div>
+
+              <!-- Sub-abas mídia -->
+              <div style="display:flex;gap:6px;margin-bottom:14px;">
+                <button class="filt-btn active" id="mTab-gallery" onclick="switchMediaTab('gallery',this)">📷 Galeria</button>
+                <button class="filt-btn" id="mTab-file" onclick="switchMediaTab('file',this)">📁 Arquivo</button>
+                <button class="filt-btn" id="mTab-url" onclick="switchMediaTab('url',this)">🔗 URL / Stream</button>
+              </div>
+
+              <!-- Galeria do celular/PC -->
+              <div id="mtab-gallery">
+                <div class="drop-z" id="galleryDropZone" style="padding:14px;">
+                  <input type="file" id="galleryInput" accept="image/*,video/*" multiple capture="environment">
+                  <div class="di" style="font-size:22px;">📷</div>
+                  <p style="font-size:12px;"><strong>Toque para abrir a Galeria</strong><br><small>Fotos, vídeos — múltiplos arquivos</small></p>
+                </div>
+                <div id="galleryGrid" class="gallery-grid mt8"></div>
+              </div>
+
+              <!-- Arquivo único -->
+              <div id="mtab-file" style="display:none;">
+                <div class="drop-z" id="fileDropZone">
+                  <input type="file" id="mediaFile" accept="video/*,audio/*,image/*">
+                  <div class="di">🎬</div>
+                  <p><strong>Clique ou arraste</strong> vídeo / áudio / imagem</p>
+                </div>
+              </div>
+
+              <!-- URL / Stream -->
+              <div id="mtab-url" style="display:none;">
+                <label class="lbl">URL de Vídeo / Stream / HLS</label>
+                <div class="flex-row">
+                  <input class="inp" id="mediaUrl" placeholder="http://...  rtmp://...  m3u8://...">
+                  <button class="btn btn-cyan btn-sm" id="btnLoadMedia">▶ Play</button>
+                </div>
+                <div class="mt8" id="mediaHistory" style="display:flex;flex-direction:column;gap:6px;"></div>
+              </div>
+            </div>
+
             <div class="card">
               <div class="card-title">📊 Estatísticas</div>
               <div class="stats-g">
@@ -335,6 +387,7 @@ input[type=range]::-webkit-slider-thumb{-webkit-appearance:none;width:14px;heigh
             </div>
           </div>
 
+          <!-- Coluna lateral: controles -->
           <div class="flex-col">
             <div class="card">
               <div class="card-title">⚙️ Fonte</div>
@@ -343,6 +396,16 @@ input[type=range]::-webkit-slider-thumb{-webkit-appearance:none;width:14px;heigh
                 <button class="btn btn-ghost btn-full" id="btnCam">📷 Câmera</button>
                 <button class="btn btn-ghost btn-full" id="btnStop" disabled>⏹ Parar Fonte</button>
               </div>
+            </div>
+
+            <!-- Cast atual -->
+            <div class="card" id="castNowCard" style="display:none;">
+              <div class="card-title">▶ Transmitindo</div>
+              <div class="playing-now" id="castNowInfo">
+                <div class="pn-dot"></div>
+                <span id="castNowLabel">—</span>
+              </div>
+              <button class="btn btn-red btn-full btn-sm" id="btnStopCast">⏹ Parar Transmissão</button>
             </div>
 
             <div class="card">
@@ -424,36 +487,67 @@ input[type=range]::-webkit-slider-thumb{-webkit-appearance:none;width:14px;heigh
       <!-- TAB: IPTV -->
       <div class="panel" id="panel-iptv">
         <div class="g3">
+          <!-- Coluna principal -->
           <div class="flex-col">
 
-            <!-- Player IPTV -->
+            <!-- Player IPTV principal -->
             <div class="card">
-              <div class="card-title">📺 Player IPTV</div>
+              <div class="card-title" id="iptvSourceLabel">📺 Player IPTV</div>
               <div class="preview-wrap">
-                <video id="iptvVid" autoplay playsinline controls style="width:100%;height:100%;object-fit:contain;background:#000;"></video>
+                <video id="iptvVid" autoplay playsinline style="width:100%;height:100%;object-fit:contain;background:#000;"></video>
                 <div class="preview-overlay" id="iptvOverlay">
                   <div class="preview-icon">📺</div>
-                  <p>Selecione um canal para assistir</p>
+                  <p>Selecione um canal ou carregue mídia</p>
                 </div>
               </div>
+
+              <!-- Barra agora tocando -->
               <div id="iptvPlayingNow" style="display:none;" class="playing-now">
                 <div class="pn-dot"></div>
                 <span id="iptvChName">—</span>
+                <span id="iptvCastBadge" style="display:none;margin-left:auto;font-size:10px;padding:2px 8px;border-radius:10px;border:1px solid var(--cyan);color:var(--cyan);">📡 CAST</span>
               </div>
+
+              <!-- Controles IPTV -->
+              <div class="prog-wrap">
+                <div class="prog-labels"><span id="iptvTime">0:00</span><span id="iptvDur">LIVE</span></div>
+                <div class="prog-bar"><div class="prog-fill" id="iptvProgFill"></div></div>
+              </div>
+              <div class="media-ctrl">
+                <button class="m-btn" id="iptvRew">⏮</button>
+                <button class="m-btn" id="iptvPlay">▶</button>
+                <button class="m-btn" id="iptvFwd">⏭</button>
+                <button class="m-btn" id="iptvMute">🔊</button>
+                <button class="m-btn" id="iptvFs">⛶</button>
+              </div>
+              <div class="vol-wrap">
+                <span>🔈</span>
+                <input type="range" id="iptvVol" min="0" max="100" value="100">
+                <span>🔊</span>
+              </div>
+            </div>
+
+            <!-- Screen Mirror / Cast do IPTV -->
+            <div class="card">
+              <div class="card-title">📡 Transmitir IPTV via Screen Mirror</div>
+              <div style="display:grid;grid-template-columns:1fr 1fr;gap:10px;margin-bottom:12px;">
+                <button class="btn btn-cyan btn-full btn-sm" id="iptvMirrorScreen">🖥️ Espelhar Tela</button>
+                <button class="btn btn-ghost btn-full btn-sm" id="iptvMirrorCam">📷 Via Câmera</button>
+              </div>
+              <label class="lbl">Transmitir para dispositivo</label>
+              <div id="iptvCastTargets"><div class="no-dev" style="font-size:12px;padding:10px;">Nenhum dispositivo — vá em Buscar TVs</div></div>
+              <div class="mt8" id="iptvCastStatus" style="font-family:'Share Tech Mono',monospace;font-size:10px;color:var(--text2);"></div>
             </div>
 
             <!-- Canais -->
             <div class="card">
-              <div class="card-title">📋 Lista de Canais <span id="chCount" style="color:var(--cyan);font-size:11px;margin-left:8px;"></span></div>
-
+              <div class="card-title">📋 Canais <span id="chCount" style="color:var(--cyan);font-size:11px;margin-left:8px;"></span></div>
               <div class="search-inp">
                 <input class="inp" id="chSearch" placeholder="Buscar canal..." oninput="filterChannels()">
               </div>
-
               <div class="filter-bar" id="catFilters">
                 <button class="filt-btn active" onclick="setCat('todos',this)">Todos</button>
               </div>
-
               <div class="ch-list" id="chList">
                 <div class="ch-empty">
                   <div class="ce-icon">📺</div>
@@ -466,16 +560,13 @@ input[type=range]::-webkit-slider-thumb{-webkit-appearance:none;width:14px;heigh
           <!-- Painel lateral IPTV -->
           <div class="flex-col">
 
-            <!-- Carregar Lista -->
             <div class="card">
               <div class="card-title">📂 Carregar Lista M3U</div>
-
               <label class="lbl">URL da Lista M3U</label>
               <div class="m3u-input-area">
                 <input class="inp" id="m3uUrl" placeholder="http://... ou https://...">
                 <button class="btn btn-cyan btn-sm" id="btnLoadUrl">⬇ Carregar</button>
               </div>
-
               <label class="lbl" style="margin-top:10px;">Arquivo M3U / M3U8</label>
               <div class="drop-z" id="dropZone">
                 <input type="file" id="m3uFile" accept=".m3u,.m3u8,.txt">
@@ -484,7 +575,6 @@ input[type=range]::-webkit-slider-thumb{-webkit-appearance:none;width:14px;heigh
               </div>
             </div>
 
-            <!-- Salvar Lista -->
             <div class="card" id="saveListCard" style="display:none;">
               <div class="card-title">💾 Salvar Lista Atual</div>
               <label class="lbl">Nome da Lista</label>
@@ -497,18 +587,16 @@ input[type=range]::-webkit-slider-thumb{-webkit-appearance:none;width:14px;heigh
               </div>
             </div>
 
-            <!-- Listas Salvas -->
             <div class="card">
               <div class="card-title">📚 Listas Salvas <span id="savedCount" style="color:var(--cyan);font-size:11px;"></span></div>
               <div id="savedListsContainer">
                 <div class="ch-empty" style="padding:20px 10px;">
                   <div class="ce-icon" style="font-size:28px;">📂</div>
-                  <p style="font-size:12px;">Nenhuma lista salva ainda.<br>Carregue e salve uma lista M3U.</p>
+                  <p style="font-size:12px;">Nenhuma lista salva ainda.</p>
                 </div>
               </div>
             </div>
 
-            <!-- Info + Log -->
             <div class="card">
               <div class="card-title">📊 Lista Ativa</div>
               <div style="font-family:'Share Tech Mono',monospace;font-size:11px;color:var(--text2);line-height:2;">
@@ -526,33 +614,6 @@ input[type=range]::-webkit-slider-thumb{-webkit-appearance:none;width:14px;heigh
             <div class="card">
               <div class="card-title">🖥️ Log IPTV</div>
               <div class="sys-log" id="iptvLog"></div>
-            </div>
-          </div>
-        </div>
-      </div>
-
-      <!-- TAB: MÍDIA -->
-      <div class="panel" id="panel-media">
-        <div class="g2">
-          <div class="card">
-            <div class="card-title">🎬 Carregar Mídia</div>
-            <div class="drop-z" id="mediaDropZone">
-              <input type="file" id="mediaFile" accept="video/*,audio/*">
-              <div class="di">🎬</div>
-              <p><strong>Clique ou arraste</strong> vídeo/áudio aqui</p>
-            </div>
-            <div class="mt12">
-              <label class="lbl">URL de Mídia / Stream</label>
-              <div class="flex-row">
-                <input class="inp" id="mediaUrl" placeholder="http://... rtmp://... hls://...">
-                <button class="btn btn-cyan btn-sm" id="btnLoadMedia">▶</button>
-              </div>
-            </div>
-          </div>
-          <div class="card">
-            <div class="card-title">📋 Histórico</div>
-            <div id="mediaHistory" class="flex-col" style="font-size:13px;color:var(--text2);">
-              <div class="no-dev">Nenhuma mídia carregada ainda</div>
             </div>
           </div>
         </div>
@@ -678,14 +739,142 @@ function addPeer(id) {
 }
 
 // ═══════════════════════════════════════════════
-// ESPELHAR TELA
+// ESPELHAR TELA + MÍDIA INTEGRADA
 // ═══════════════════════════════════════════════
 const vid = $('previewVid');
+const previewImg = $('previewImg');
+let galleryItems = [];
+
+// Sub-abas mídia
+function switchMediaTab(tab, el) {
+  ['gallery','file','url'].forEach(t => {
+    $('mtab-' + t).style.display = t === tab ? '' : 'none';
+    $('mTab-' + t).classList.toggle('active', t === tab);
+  });
+}
+
+// Galeria — abre arquivos múltiplos da galeria do celular
+$('galleryInput').addEventListener('change', e => {
+  const files = Array.from(e.target.files);
+  if (!files.length) return;
+  files.forEach(f => addToGallery(f));
+  toast(`${files.length} item(s) adicionado(s) à galeria`, 'ok');
+  slog(`Galeria: ${files.length} arquivo(s) carregado(s)`, 'ok');
+});
+
+// Drag & drop na galeria
+const gdz = $('galleryDropZone');
+gdz.addEventListener('dragover', e => { e.preventDefault(); gdz.classList.add('drag'); });
+gdz.addEventListener('dragleave', () => gdz.classList.remove('drag'));
+gdz.addEventListener('drop', e => {
+  e.preventDefault(); gdz.classList.remove('drag');
+  Array.from(e.dataTransfer.files).forEach(f => addToGallery(f));
+});
+
+function addToGallery(file) {
+  const url = URL.createObjectURL(file);
+  const isVideo = file.type.startsWith('video/');
+  const isImg = file.type.startsWith('image/');
+  if (!isVideo && !isImg) return;
+
+  const item = { url, name: file.name, type: isVideo ? 'video' : 'image', file };
+  galleryItems.push(item);
+
+  const div = document.createElement('div');
+  div.className = 'gallery-item';
+  div.title = file.name;
+  div.innerHTML = isImg
+    ? `<img src="${url}" loading="lazy"><div class="gi-type">IMG</div>`
+    : `<video src="${url}" muted preload="metadata" style="pointer-events:none;"></video><div class="gi-type">VID</div>`;
+
+  div.addEventListener('click', () => {
+    document.querySelectorAll('.gallery-item').forEach(i => i.classList.remove('active'));
+    div.classList.add('active');
+    playGalleryItem(item);
+  });
+
+  $('galleryGrid').appendChild(div);
+}
+
+function playGalleryItem(item) {
+  if (item.type === 'image') {
+    vid.style.display = 'none';
+    previewImg.style.display = 'block';
+    previewImg.src = item.url;
+    $('prevOverlay').classList.add('gone');
+    $('mainSourceLabel').textContent = '🖼️ Imagem — ' + item.name.substring(0, 30);
+    slog(`Exibindo imagem: ${item.name}`, 'ok');
+    toast(`Imagem: ${item.name}`, 'ok');
+    setCastNow(item.name);
+  } else {
+    previewImg.style.display = 'none';
+    vid.style.display = '';
+    vid.srcObject = null;
+    vid.src = item.url;
+    vid.load();
+    vid.play().catch(() => {});
+    $('prevOverlay').classList.add('gone');
+    $('mainSourceLabel').textContent = '🎬 Vídeo — ' + item.name.substring(0, 30);
+    slog(`Reproduzindo: ${item.name}`, 'ok');
+    toast(`▶ ${item.name}`, 'ok');
+    setCastNow(item.name);
+    $('btnStop').disabled = false;
+  }
+}
+
+function setCastNow(label) {
+  $('castNowCard').style.display = '';
+  $('castNowLabel').textContent = label;
+}
+
+// Arquivo único
+$('mediaFile').addEventListener('change', e => {
+  const file = e.target.files[0];
+  if (!file) return;
+  addToGallery(file);
+  // Reproduz imediatamente
+  const last = galleryItems[galleryItems.length - 1];
+  playGalleryItem(last);
+});
+
+// URL / Stream
+$('btnLoadMedia').addEventListener('click', () => {
+  const url = $('mediaUrl').value.trim();
+  if (!url) return;
+  previewImg.style.display = 'none';
+  vid.style.display = '';
+  vid.srcObject = null;
+  vid.src = url;
+  vid.load();
+  vid.play().catch(() => {});
+  $('prevOverlay').classList.add('gone');
+  $('mainSourceLabel').textContent = '🔗 Stream';
+  slog(`Stream: ${url}`, 'ok');
+  toast('Stream carregado!', 'ok');
+  setCastNow(url.substring(0, 40));
+  addMediaHistory(url);
+  $('btnStop').disabled = false;
+});
+$('mediaUrl').addEventListener('keydown', e => { if (e.key === 'Enter') $('btnLoadMedia').click(); });
+
+function addMediaHistory(url) {
+  const h = $('mediaHistory');
+  const short = url.length > 50 ? url.substring(0, 50) + '...' : url;
+  const d = document.createElement('div');
+  d.style.cssText = 'padding:8px 10px;background:var(--surface);border:1px solid var(--border);border-radius:7px;cursor:pointer;font-size:11px;color:var(--text2);overflow:hidden;text-overflow:ellipsis;white-space:nowrap;font-family:monospace;';
+  d.textContent = short;
+  d.title = url;
+  d.addEventListener('click', () => { $('mediaUrl').value = url; $('btnLoadMedia').click(); });
+  h.prepend(d);
+  if (h.children.length > 5) h.removeChild(h.lastChild);
+}
 
 $('btnScreen').addEventListener('click', async () => {
   try {
     const stream = await navigator.mediaDevices.getDisplayMedia({ video: true, audio: true });
-    setStream(stream);
+    previewImg.style.display = 'none';
+    vid.style.display = '';
+    setStream(stream, '🖥️ Espelhando Tela');
     slog('Captura de tela iniciada', 'ok');
     toast('Espelhamento iniciado!', 'ok');
   } catch(e) {
@@ -697,7 +886,9 @@ $('btnScreen').addEventListener('click', async () => {
 $('btnCam').addEventListener('click', async () => {
   try {
     const stream = await navigator.mediaDevices.getUserMedia({ video: true, audio: true });
-    setStream(stream);
+    previewImg.style.display = 'none';
+    vid.style.display = '';
+    setStream(stream, '📷 Câmera');
     slog('Câmera iniciada', 'ok');
     toast('Câmera ativa!', 'ok');
   } catch(e) {
@@ -705,43 +896,50 @@ $('btnCam').addEventListener('click', async () => {
   }
 });
 
-function setStream(stream) {
+function setStream(stream, label) {
   mediaStream = stream;
   vid.srcObject = stream;
   $('prevOverlay').classList.add('gone');
   $('btnStop').disabled = false;
   $('hdrDot').className = 'dot on';
   $('hdrStatus').textContent = 'AO VIVO';
+  $('mainSourceLabel').textContent = label || '🎥 Transmissão ao Vivo';
+  setCastNow(label || 'Transmissão');
   startStats();
 }
 
 $('btnStop').addEventListener('click', () => {
   if (mediaStream) { mediaStream.getTracks().forEach(t => t.stop()); mediaStream = null; }
   vid.srcObject = null;
+  vid.src = '';
+  previewImg.style.display = 'none';
+  vid.style.display = '';
   $('prevOverlay').classList.remove('gone');
   $('btnStop').disabled = true;
   $('hdrDot').className = 'dot';
   $('hdrStatus').textContent = 'OFFLINE';
+  $('castNowCard').style.display = 'none';
+  $('mainSourceLabel').textContent = '🎥 Transmissão ao Vivo';
+  document.querySelectorAll('.gallery-item').forEach(i => i.classList.remove('active'));
   stopStats();
   slog('Transmissão encerrada', 'warn');
 });
 
-// Controls
+$('btnStopCast').addEventListener('click', () => { $('btnStop').click(); });
+
+// Controls player principal
 $('mPlay').addEventListener('click', () => {
   if (vid.paused) { vid.play(); $('mPlay').textContent = '⏸'; }
   else { vid.pause(); $('mPlay').textContent = '▶'; }
 });
-$('mMute').addEventListener('click', () => {
-  vid.muted = !vid.muted;
-  $('mMute').textContent = vid.muted ? '🔇' : '🔊';
-});
+$('mMute').addEventListener('click', () => { vid.muted = !vid.muted; $('mMute').textContent = vid.muted ? '🔇' : '🔊'; });
 $('mRew').addEventListener('click', () => { vid.currentTime = Math.max(0, vid.currentTime - 10); });
 $('mFwd').addEventListener('click', () => { vid.currentTime += 10; });
 $('mFs').addEventListener('click', () => { if (vid.requestFullscreen) vid.requestFullscreen(); });
 $('volSlider').addEventListener('input', e => { vid.volume = e.target.value / 100; });
 
 vid.addEventListener('timeupdate', () => {
-  if (vid.duration) {
+  if (vid.duration && !isNaN(vid.duration)) {
     $('vidTime').textContent = fmtTime(vid.currentTime);
     $('vidDur').textContent = fmtTime(vid.duration);
     $('progFill').style.width = (vid.currentTime / vid.duration * 100) + '%';
@@ -766,10 +964,63 @@ function startStats() {
 }
 function stopStats() {
   clearInterval(statsInterval);
-  $('statFps').textContent = '0';
-  $('statBit').textContent = '0';
-  $('statLat').textContent = '0';
+  ['statFps','statBit','statLat'].forEach(id => $(id).textContent = '0');
 }
+
+// IPTV mirror screen
+$('iptvMirrorScreen').addEventListener('click', async () => {
+  try {
+    const stream = await navigator.mediaDevices.getDisplayMedia({ video: true, audio: true });
+    const v = $('iptvVid');
+    v.srcObject = stream;
+    $('iptvOverlay').classList.add('gone');
+    $('iptvPlayingNow').style.display = 'flex';
+    $('iptvChName').textContent = '🖥️ Espelhando tela';
+    $('iptvCastBadge').style.display = '';
+    $('iptvSourceLabel').textContent = '🖥️ Screen Mirror — IPTV';
+    $('iptvCastStatus').textContent = 'Espelhando tela no player IPTV';
+    ilog('Screen mirror ativo no IPTV', 'ok');
+    toast('Tela espelhada no player IPTV!', 'ok');
+  } catch(e) {
+    toast('Não foi possível espelhar a tela', 'err');
+  }
+});
+
+$('iptvMirrorCam').addEventListener('click', async () => {
+  try {
+    const stream = await navigator.mediaDevices.getUserMedia({ video: true, audio: true });
+    const v = $('iptvVid');
+    v.srcObject = stream;
+    $('iptvOverlay').classList.add('gone');
+    $('iptvPlayingNow').style.display = 'flex';
+    $('iptvChName').textContent = '📷 Câmera ativa';
+    $('iptvCastBadge').style.display = '';
+    $('iptvSourceLabel').textContent = '📷 Câmera — IPTV';
+    ilog('Câmera ativa no player IPTV', 'ok');
+    toast('Câmera no player IPTV!', 'ok');
+  } catch(e) {
+    toast('Câmera indisponível', 'err');
+  }
+});
+
+// Controls IPTV player
+const iv = $('iptvVid');
+$('iptvPlay').addEventListener('click', () => {
+  if (iv.paused) { iv.play(); $('iptvPlay').textContent = '⏸'; }
+  else { iv.pause(); $('iptvPlay').textContent = '▶'; }
+});
+$('iptvMute').addEventListener('click', () => { iv.muted = !iv.muted; $('iptvMute').textContent = iv.muted ? '🔇' : '🔊'; });
+$('iptvRew').addEventListener('click', () => { iv.currentTime = Math.max(0, iv.currentTime - 10); });
+$('iptvFwd').addEventListener('click', () => { iv.currentTime += 10; });
+$('iptvFs').addEventListener('click', () => { if (iv.requestFullscreen) iv.requestFullscreen(); });
+$('iptvVol').addEventListener('input', e => { iv.volume = e.target.value / 100; });
+iv.addEventListener('timeupdate', () => {
+  if (iv.duration && !isNaN(iv.duration) && iv.duration !== Infinity) {
+    $('iptvTime').textContent = fmtTime(iv.currentTime);
+    $('iptvDur').textContent = fmtTime(iv.duration);
+    $('iptvProgFill').style.width = (iv.currentTime / iv.duration * 100) + '%';
+  }
+});
 
 // ═══════════════════════════════════════════════
 // SCAN
@@ -1281,44 +1532,7 @@ $('btnClearList').addEventListener('click', () => {
 });
 
 // ═══════════════════════════════════════════════
-// MÍDIA
-// ═══════════════════════════════════════════════
-$('mediaFile').addEventListener('change', e => {
-  const file = e.target.files[0];
-  if (!file) return;
-  const url = URL.createObjectURL(file);
-  vid.src = url;
-  vid.load();
-  vid.play();
-  $('prevOverlay').classList.add('gone');
-  addMediaHistory(file.name, url);
-  toast(`Reproduzindo: ${file.name}`, 'ok');
-  slog(`Arquivo carregado: ${file.name}`, 'ok');
-});
-
-$('btnLoadMedia').addEventListener('click', () => {
-  const url = $('mediaUrl').value.trim();
-  if (!url) return;
-  vid.src = url;
-  vid.load();
-  vid.play().catch(() => {});
-  $('prevOverlay').classList.add('gone');
-  addMediaHistory(url, url);
-  toast('Stream carregado!', 'ok');
-});
-
-function addMediaHistory(name, url) {
-  const h = $('mediaHistory');
-  if (h.querySelector('.no-dev')) h.innerHTML = '';
-  const d = document.createElement('div');
-  d.style.cssText = 'padding:10px;background:var(--surface);border:1px solid var(--border);border-radius:8px;cursor:pointer;';
-  d.innerHTML = `<div style="font-weight:600;color:var(--white);font-size:13px;overflow:hidden;text-overflow:ellipsis;white-space:nowrap;">${name}</div>`;
-  d.addEventListener('click', () => { vid.src = url; vid.play(); $('prevOverlay').classList.add('gone'); });
-  h.prepend(d);
-}
-
-// ═══════════════════════════════════════════════
-// HLS.JS (carrega dinamicamente se precisar)
+// HLS.JS (carrega dinamicamente)
 // ═══════════════════════════════════════════════
 const hlsScript = document.createElement('script');
 hlsScript.src = 'https://cdn.jsdelivr.net/npm/hls.js@latest/dist/hls.min.js';
@@ -1334,12 +1548,8 @@ slog('Screen TV inicializado', 'ok');
 slog('Aguardando conexões...', 'info');
 ilog('IPTV engine pronto', 'ok');
 ilog('Suporte HLS carregando...', 'info');
-
-// Auto-carrega última lista salva ativa
 const autoLists = getSavedLists();
-if (autoLists.length > 0) {
-  ilog(`${autoLists.length} lista(s) salva(s) encontrada(s)`, 'info');
-}
+if (autoLists.length > 0) ilog(`${autoLists.length} lista(s) salva(s) encontrada(s)`, 'info');
 </script>
 </body>
 </html>
