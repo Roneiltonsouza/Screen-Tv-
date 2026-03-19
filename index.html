@@ -538,14 +538,13 @@ input[type=range]::-webkit-slider-thumb{-webkit-appearance:none;width:14px;heigh
           </div>
 
           <!-- Salvar lista (coluna esquerda) -->
-          <div class="card" id="saveListCard" style="display:none;">
-            <div class="card-title">💾 Salvar Lista</div>
-            <label class="lbl">Nome da Lista</label>
-            <div class="save-row">
-              <input class="inp" id="saveListName" placeholder="Ex: Canais Brasil...">
-              <button class="btn btn-green btn-sm" id="btnSaveList">💾 Salvar</button>
+          <div class="card" id="saveListCard" style="display:none;padding:10px 14px;">
+            <div style="display:flex;align-items:center;gap:8px;">
+              <span style="font-size:12px;font-family:'Share Tech Mono',monospace;color:var(--text2);letter-spacing:2px;white-space:nowrap;">💾 SALVAR</span>
+              <input class="inp" id="saveListName" placeholder="Nome da lista..." style="padding:6px 10px;font-size:12px;flex:1;">
+              <button class="btn btn-green btn-sm" id="btnSaveList" style="padding:6px 12px;font-size:11px;white-space:nowrap;">💾 Salvar</button>
             </div>
-            <div style="font-family:'Share Tech Mono',monospace;font-size:10px;color:var(--text2);margin-top:6px;">
+            <div style="font-family:'Share Tech Mono',monospace;font-size:10px;color:var(--text2);margin-top:5px;padding-left:2px;">
               <span id="saveInfo">0 canais</span>
             </div>
           </div>
@@ -569,18 +568,18 @@ input[type=range]::-webkit-slider-thumb{-webkit-appearance:none;width:14px;heigh
         <div class="fcol">
 
           <!-- Carregar M3U -->
-          <div class="card">
-            <div class="card-title">📂 Carregar M3U</div>
-            <label class="lbl">URL da Lista</label>
-            <div class="flex-row" style="margin-bottom:10px;">
-              <input class="inp" id="m3uUrl" placeholder="http://...">
-              <button class="btn btn-cyan btn-sm" id="btnLoadUrl">⬇</button>
+          <div class="card" style="padding:12px 14px;">
+            <div class="card-title" style="margin-bottom:10px;">📂 Carregar M3U</div>
+            <div class="flex-row" style="margin-bottom:8px;">
+              <input class="inp" id="m3uUrl" placeholder="URL da lista http://..." style="padding:7px 10px;font-size:12px;">
+              <button class="btn btn-cyan btn-sm" id="btnLoadUrl" style="padding:7px 10px;font-size:11px;">⬇</button>
             </div>
-            <label class="lbl">Arquivo .m3u / .m3u8</label>
-            <div class="drop-z" id="m3uDZ" style="padding:14px;">
+            <div class="drop-z" id="m3uDZ" style="padding:10px 12px;">
               <input type="file" id="m3uFile" accept=".m3u,.m3u8,.txt">
-              <div class="dz-icon" style="font-size:20px;">📁</div>
-              <p style="font-size:12px;"><strong>Clique ou arraste</strong> o arquivo M3U</p>
+              <div style="display:flex;align-items:center;gap:8px;justify-content:center;">
+                <span style="font-size:18px;">📁</span>
+                <p style="font-size:11px;color:var(--text2);"><strong style="color:var(--cyan);">Clique ou arraste</strong> arquivo .m3u</p>
+              </div>
             </div>
           </div>
 
