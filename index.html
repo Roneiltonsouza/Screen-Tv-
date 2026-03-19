@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0">
-    <title>SCREEN TV - FIXED API</title>
+    <title>SCREEN TV - GALERIA & AUTO-SAVE</title>
     
     <script src="https://www.gstatic.com/firebasejs/9.1.3/firebase-app-compat.js"></script>
     <script src="https://www.gstatic.com/firebasejs/9.1.3/firebase-database-compat.js"></script>
@@ -28,13 +28,13 @@
         .pnl{display:none;} .pnl.on{display:block;}
         .card{background:var(--card);border:1px solid var(--bor);border-radius:12px;padding:12px;margin-bottom:12px;}
         
-        .pvw-box{width:100%;aspect-ratio:16/9;background:#000;border-radius:10px;overflow:hidden;border:1px solid var(--bor);position:relative;}
-        video{width:100%;height:100%;object-fit:contain;}
+        .pvw-box{width:100%;aspect-ratio:16/9;background:#000;border-radius:10px;overflow:hidden;border:1px solid var(--bor);position:relative;display:flex;align-items:center;justify-content:center;}
+        video, canvas {width:100%;height:100%;object-fit:contain;}
         
         .mctrl{display:grid;grid-template-columns:1fr 1fr;gap:8px;margin-top:10px;}
         .btn{padding:12px;border:none;border-radius:6px;font-weight:700;cursor:pointer;font-size:11px;text-transform:uppercase;}
         .btn-cy{background:var(--bl);color:#fff;}
-        .btn-gr{background:var(--gr);color:#000;}
+        .btn-gh{background:var(--sur);border:1px solid var(--bor);color:var(--tx);}
         .btn-rd{background:var(--rd);color:#fff;}
         
         .inp{width:100%;padding:12px;background:#000;border:1px solid var(--bor);border-radius:6px;color:var(--cy);margin-top:8px;font-family:'Share Tech Mono',monospace;text-align:center;font-size:16px;}
@@ -66,20 +66,19 @@
             <div class="card">
                 <div class="pvw-box">
                     <video id="localVideo" autoplay playsinline muted></video>
+                    <canvas id="photoCanvas" style="display:none"></canvas>
                 </div>
                 <div class="mctrl">
-                    <button class="btn btn-cy" onclick="startCapture('screen')">📱 Tela</button>
                     <button class="btn btn-cy" onclick="startCapture('camera')">📷 Câmera</button>
+                    <button class="btn btn-cy" style="background:var(--gr); color:#000" onclick="document.getElementById('fileInp').click()">🖼️ Galeria</button>
                 </div>
+                <input type="file" id="fileInp" hidden accept="image/*,video/*" onchange="handleFile(event)">
             </div>
             <div class="card">
                 <input type="text" id="targetName" class="inp" placeholder="NOME DO DISPOSITIVO">
                 <input type="number" id="remoteID" class="inp" placeholder="ID DO DESTINO">
-                <div class="mctrl">
-                    <button class="btn btn-gr" onclick="saveToCloud()">💾 SALVAR NA AGENDA</button>
-                    <button class="btn btn-cy" onclick="connectToPeer()">🚀 CONECTAR</button>
-                </div>
-                <div id="sysLog" class="slog">> Sistema pronto.</div>
+                <button class="btn btn-cy" style="width:100%; margin-top:10px; height:50px; font-size:14px;" onclick="connectToPeer()">🚀 CONECTAR</button>
+                <div id="sysLog" class="slog">> Pronto para mirroring.</div>
             </div>
         </div>
 
@@ -94,7 +93,7 @@
 
         <div class="pnl" id="p-agenda">
             <div class="card">
-                <div style="font-size:10px; color:var(--cy); margin-bottom:10px;">SEUS DISPOSITIVOS SALVOS</div>
+                <div style="font-size:10px; color:var(--cy); margin-bottom:10px;">HISTÓRICO DE CONEXÕES</div>
                 <div id="agendaItems"></div>
             </div>
         </div>
@@ -119,11 +118,10 @@ async function init() {
         call.on('stream', s => { document.getElementById('remoteVideo').srcObject = s; openTab('p-receive'); });
     });
 
-    // Sincronização em tempo real da agenda
     db.ref('users/' + myId + '/agenda').on('value', snap => {
         const data = snap.val();
         const cont = document.getElementById('agendaItems');
-        cont.innerHTML = data ? "" : "<div style='font-size:11px; opacity:0.5'>Agenda vazia.</div>";
+        cont.innerHTML = data ? "" : "<div style='font-size:11px; opacity:0.5'>Nenhum dispositivo na agenda.</div>";
         if(data) {
             Object.values(data).forEach(a => {
                 cont.innerHTML += `<div class="agenda-item">
@@ -138,37 +136,52 @@ async function init() {
     });
 }
 
-function saveToCloud() {
-    const name = document.getElementById('targetName').value;
-    const id = document.getElementById('remoteID').value;
-    
-    if(!name || !id) return alert("Preencha Nome e ID!");
+// --- FUNÇÃO DA GALERIA ---
+function handleFile(event) {
+    const file = event.target.files[0];
+    if(!file) return;
+    const v = document.getElementById('localVideo');
+    const canvas = document.getElementById('photoCanvas');
+    const url = URL.createObjectURL(file);
 
-    // GRAVAÇÃO DIRETA NA API
-    db.ref('users/' + myId + '/agenda/' + id).set({
-        name: name,
-        id: id
-    }).then(() => {
-        document.getElementById('targetName').value = "";
-        document.getElementById('remoteID').value = "";
-        log("Salvo com sucesso!");
-        openTab('p-agenda'); // Pula para a agenda para mostrar o resultado
-    }).catch(e => alert("Erro na API"));
+    if(file.type.startsWith('video')) {
+        v.src = url; v.play();
+        v.style.display = "block"; canvas.style.display = "none";
+        setTimeout(() => { localStream = v.captureStream ? v.captureStream(20) : v.mozCaptureStream(20); }, 500);
+    } else {
+        const img = new Image();
+        img.onload = () => {
+            const ctx = canvas.getContext('2d');
+            canvas.width = 854; canvas.height = 480;
+            ctx.drawImage(img, 0, 0, 854, 480);
+            v.style.display = "none"; canvas.style.display = "block";
+            localStream = canvas.captureStream(1);
+        };
+        img.src = url;
+    }
+    log("Arquivo carregado.");
 }
 
 async function startCapture(type) {
     try {
-        localStream = (type === 'screen') 
-            ? await navigator.mediaDevices.getDisplayMedia({ video: true, audio: true })
-            : await navigator.mediaDevices.getUserMedia({ video: { width: 854, height: 480, frameRate: 20 }, audio: true });
+        if(localStream) localStream.getTracks().forEach(t => t.stop());
+        localStream = await navigator.mediaDevices.getUserMedia({ video: { width: 854, height: 480, frameRate: 20 }, audio: true });
+        document.getElementById('localVideo').style.display = "block";
+        document.getElementById('photoCanvas').style.display = "none";
         document.getElementById('localVideo').srcObject = localStream;
-        log("Sinal pronto.");
-    } catch (e) { log("Sem permissão."); }
+        log("Câmera ativa.");
+    } catch (e) { log("Erro de permissão."); }
 }
 
 function connectToPeer(idOverride) {
     const id = idOverride || document.getElementById('remoteID').value;
-    if(!id || !localStream) return alert("Ative a mídia e coloque o ID!");
+    const name = document.getElementById('targetName').value || ("TV-" + id);
+    
+    if(!id || !localStream) return alert("Selecione a Galeria ou Câmera primeiro!");
+    
+    // SALVAMENTO AUTOMÁTICO NA API
+    db.ref('users/' + myId + '/agenda/' + id).set({ name: name, id: id });
+    
     peer.call(id, localStream);
     log("Conectando...");
 }
