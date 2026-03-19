@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0">
-    <title>SCREEN TV - GALERIA & AUTO-SAVE</title>
+    <title>SCREEN TV - PRO RECORD</title>
     
     <script src="https://www.gstatic.com/firebasejs/9.1.3/firebase-app-compat.js"></script>
     <script src="https://www.gstatic.com/firebasejs/9.1.3/firebase-database-compat.js"></script>
@@ -16,40 +16,42 @@
         body{background:var(--bg);font-family:'Exo 2',sans-serif;color:var(--tx);height:100vh;overflow:hidden;}
         #app{display:flex;flex-direction:column;height:100vh;max-width:500px;margin:0 auto;}
         
-        #hdr{display:flex;align-items:center;justify-content:space-between;padding:0 15px;height:60px;border-bottom:1px solid var(--bor);}
+        #hdr{display:flex;align-items:center;justify-content:space-between;padding:0 15px;height:65px;border-bottom:1px solid var(--bor);background:rgba(5,7,10,0.95);}
         .id-panel{background:var(--card);border:1px solid var(--cy);border-radius:8px;padding:5px 12px;cursor:pointer;}
         .id-val{font-family:'Share Tech Mono',monospace;font-size:18px;color:#fff;}
 
         #tabs{display:flex;background:#080c14;}
-        .tab{flex:1;padding:15px;text-align:center;cursor:pointer;font-weight:700;color:#475569;font-size:11px;}
+        .tab{flex:1;padding:15px;text-align:center;cursor:pointer;font-weight:700;color:#475569;font-size:12px;text-transform:uppercase;}
         .tab.on{color:var(--cy);border-bottom:3px solid var(--cy);background:rgba(0,242,255,0.05);}
 
-        #panels{flex:1;overflow-y:auto;padding:12px;}
+        #panels{flex:1;overflow-y:auto;padding:15px;}
         .pnl{display:none;} .pnl.on{display:block;}
-        .card{background:var(--card);border:1px solid var(--bor);border-radius:12px;padding:12px;margin-bottom:12px;}
+        .card{background:var(--card);border:1px solid var(--bor);border-radius:12px;padding:15px;margin-bottom:15px;position:relative;}
         
         .pvw-box{width:100%;aspect-ratio:16/9;background:#000;border-radius:10px;overflow:hidden;border:1px solid var(--bor);position:relative;display:flex;align-items:center;justify-content:center;}
         video, canvas {width:100%;height:100%;object-fit:contain;}
         
-        .mctrl{display:grid;grid-template-columns:1fr 1fr;gap:8px;margin-top:10px;}
-        .btn{padding:12px;border:none;border-radius:6px;font-weight:700;cursor:pointer;font-size:11px;text-transform:uppercase;}
+        /* Controles flutuantes no vídeo */
+        .v-tools{position:absolute;bottom:10px;right:10px;display:flex;gap:8px;z-index:10;}
+        .v-btn{background:rgba(0,0,0,0.7);border:1px solid rgba(255,255,255,0.2);color:#fff;width:40px;height:40px;border-radius:50%;cursor:pointer;display:flex;align-items:center;justify-content:center;font-size:18px;}
+        .v-btn.rec-on{color:var(--rd);box-shadow: 0 0 10px var(--rd);border-color:var(--rd);}
+
+        .mctrl{display:grid;grid-template-columns:1fr 1fr;gap:10px;margin-top:12px;}
+        .btn{padding:12px;border:none;border-radius:8px;font-weight:700;cursor:pointer;font-size:11px;text-transform:uppercase;transition:0.2s;}
         .btn-cy{background:var(--bl);color:#fff;}
-        .btn-gh{background:var(--sur);border:1px solid var(--bor);color:var(--tx);}
+        .btn-gr{background:var(--gr);color:#000;}
         .btn-rd{background:var(--rd);color:#fff;}
         
-        .inp{width:100%;padding:12px;background:#000;border:1px solid var(--bor);border-radius:6px;color:var(--cy);margin-top:8px;font-family:'Share Tech Mono',monospace;text-align:center;font-size:16px;}
+        .inp{width:100%;padding:14px;background:#000;border:1px solid var(--bor);border-radius:8px;color:var(--cy);margin-top:10px;font-family:'Share Tech Mono',monospace;text-align:center;font-size:16px;}
+        .slog{background:#000;padding:10px;height:45px;font-family:'Share Tech Mono';font-size:11px;color:#475569;margin-top:12px;border-radius:8px;border:1px solid var(--bor);}
         
-        .agenda-item{background:rgba(255,255,255,0.03);padding:12px;border-radius:8px;margin-bottom:8px;display:flex;justify-content:space-between;align-items:center;border-left:4px solid var(--cy);}
-        .agenda-info b{font-size:14px;display:block;color:#fff;}
-        .agenda-info small{color:var(--cy);font-family:'Share Tech Mono';font-size:12px;}
-
-        .slog{background:#000;padding:8px;height:40px;font-family:'Share Tech Mono';font-size:10px;color:#475569;margin-top:10px;border-radius:5px;}
+        .rec-timer{position:absolute;top:10px;left:10px;background:rgba(255,51,102,0.8);color:#fff;padding:2px 8px;border-radius:4px;font-size:10px;display:none;font-family:'Share Tech Mono';}
     </style>
 </head>
 <body>
 <div id="app">
     <div id="hdr">
-        <div style="font-weight:900; font-size:18px; color:var(--cy);">SCREEN TV</div>
+        <div style="font-weight:900; font-size:20px; color:var(--cy);">SCREEN TV</div>
         <div class="id-panel" onclick="copyId()">
             <div id="my-id" class="id-val">...</div>
         </div>
@@ -58,43 +60,44 @@
     <div id="tabs">
         <div class="tab on" id="t-send" onclick="openTab('p-send')">TRANSMITIR</div>
         <div class="tab" id="t-receive" onclick="openTab('p-receive')">RECEBER</div>
-        <div class="tab" id="t-agenda" onclick="openTab('p-agenda')">AGENDA</div>
     </div>
 
     <div id="panels">
         <div class="pnl on" id="p-send">
-            <div class="card">
+            <div class="card" id="localArea">
                 <div class="pvw-box">
+                    <div id="recLabel" class="rec-timer">REC 00:00</div>
                     <video id="localVideo" autoplay playsinline muted></video>
                     <canvas id="photoCanvas" style="display:none"></canvas>
+                    
+                    <div class="v-tools">
+                        <button id="btnRec" class="v-btn" onclick="toggleRecord()" title="Gravar">●</button>
+                        <button class="v-btn" onclick="toggleFS('localArea')" title="Tela Cheia">⛶</button>
+                    </div>
                 </div>
                 <div class="mctrl">
-                    <button class="btn btn-cy" onclick="startCapture('camera')">📷 Câmera</button>
-                    <button class="btn btn-cy" style="background:var(--gr); color:#000" onclick="document.getElementById('fileInp').click()">🖼️ Galeria</button>
+                    <button class="btn btn-cy" onclick="startCapture()">📷 Câmera</button>
+                    <button class="btn btn-gr" onclick="document.getElementById('fileInp').click()">🖼️ Galeria</button>
                 </div>
                 <input type="file" id="fileInp" hidden accept="image/*,video/*" onchange="handleFile(event)">
             </div>
+            
             <div class="card">
-                <input type="text" id="targetName" class="inp" placeholder="NOME DO DISPOSITIVO">
                 <input type="number" id="remoteID" class="inp" placeholder="ID DO DESTINO">
-                <button class="btn btn-cy" style="width:100%; margin-top:10px; height:50px; font-size:14px;" onclick="connectToPeer()">🚀 CONECTAR</button>
-                <div id="sysLog" class="slog">> Pronto para mirroring.</div>
+                <button class="btn btn-cy" style="width:100%; margin-top:15px; height:55px;" onclick="connectToPeer()">🚀 INICIAR CONEXÃO</button>
+                <div id="sysLog" class="slog">> Sistema pronto.</div>
             </div>
         </div>
 
         <div class="pnl" id="p-receive">
-            <div class="card">
+            <div class="card" id="remoteArea">
                 <div class="pvw-box">
                     <video id="remoteVideo" autoplay playsinline></video>
+                    <div class="v-tools">
+                        <button class="v-btn" onclick="toggleFS('remoteArea')">⛶</button>
+                    </div>
                 </div>
-                <button class="btn btn-rd" style="width:100%; margin-top:10px;" onclick="location.reload()">🛑 ENCERRAR</button>
-            </div>
-        </div>
-
-        <div class="pnl" id="p-agenda">
-            <div class="card">
-                <div style="font-size:10px; color:var(--cy); margin-bottom:10px;">HISTÓRICO DE CONEXÕES</div>
-                <div id="agendaItems"></div>
+                <button class="btn btn-rd" style="width:100%; margin-top:15px; height:50px;" onclick="location.reload()">🛑 ENCERRAR TUDO</button>
             </div>
         </div>
     </div>
@@ -105,7 +108,7 @@ const firebaseConfig = { apiKey: "AIzaZtnv4FdBRJg86c3ISVIHojdQOb92L891sa3", data
 firebase.initializeApp(firebaseConfig);
 const db = firebase.database();
 
-let peer, myId, localStream;
+let peer, myId, localStream, mediaRecorder, chunks = [];
 
 async function init() {
     myId = localStorage.getItem('screentv_id') || Math.floor(100000 + Math.random() * 900000).toString();
@@ -115,28 +118,55 @@ async function init() {
     peer = new Peer(myId, { config: { 'iceServers': [{ 'urls': 'stun:stun.l.google.com:19302' }] }});
     peer.on('call', call => {
         call.answer();
-        call.on('stream', s => { document.getElementById('remoteVideo').srcObject = s; openTab('p-receive'); });
-    });
-
-    db.ref('users/' + myId + '/agenda').on('value', snap => {
-        const data = snap.val();
-        const cont = document.getElementById('agendaItems');
-        cont.innerHTML = data ? "" : "<div style='font-size:11px; opacity:0.5'>Nenhum dispositivo na agenda.</div>";
-        if(data) {
-            Object.values(data).forEach(a => {
-                cont.innerHTML += `<div class="agenda-item">
-                    <div class="agenda-info"><b>${a.name}</b><small>${a.id}</small></div>
-                    <div style="display:flex; gap:5px">
-                        <button class="btn btn-cy" style="padding:5px 10px" onclick="connectToPeer('${a.id}')">LIGAR</button>
-                        <button class="btn btn-rd" style="padding:5px 10px; background:none; border:1px solid var(--rd)" onclick="delItem('${a.id}')">X</button>
-                    </div>
-                </div>`;
-            });
-        }
+        call.on('stream', s => { 
+            document.getElementById('remoteVideo').srcObject = s; 
+            openTab('p-receive'); 
+        });
     });
 }
 
-// --- FUNÇÃO DA GALERIA ---
+// --- GRAVAÇÃO ---
+function toggleRecord() {
+    if (!localStream) return alert("Ative a Câmera ou Galeria primeiro!");
+    
+    const btn = document.getElementById('btnRec');
+    const label = document.getElementById('recLabel');
+
+    if (mediaRecorder && mediaRecorder.state === "recording") {
+        mediaRecorder.stop();
+        btn.classList.remove('rec-on');
+        label.style.display = "none";
+        log("Gravação salva.");
+    } else {
+        chunks = [];
+        mediaRecorder = new MediaRecorder(localStream, { mimeType: 'video/webm' });
+        mediaRecorder.ondataavailable = e => chunks.push(e.data);
+        mediaRecorder.onstop = () => {
+            const blob = new Blob(chunks, { type: 'video/webm' });
+            const url = URL.createObjectURL(blob);
+            const a = document.createElement('a');
+            a.href = url;
+            a.download = `ScreenTV_Rec_${Date.now()}.webm`;
+            a.click();
+        };
+        mediaRecorder.start();
+        btn.classList.add('rec-on');
+        label.style.display = "block";
+        log("Gravando sinal...");
+    }
+}
+
+// --- TELA CHEIA ---
+function toggleFS(elementId) {
+    const el = document.getElementById(elementId);
+    if (!document.fullscreenElement) {
+        el.requestFullscreen().catch(err => alert("Erro ao ativar tela cheia."));
+    } else {
+        document.exitFullscreen();
+    }
+}
+
+// --- MÍDIA ---
 function handleFile(event) {
     const file = event.target.files[0];
     if(!file) return;
@@ -147,13 +177,13 @@ function handleFile(event) {
     if(file.type.startsWith('video')) {
         v.src = url; v.play();
         v.style.display = "block"; canvas.style.display = "none";
-        setTimeout(() => { localStream = v.captureStream ? v.captureStream(20) : v.mozCaptureStream(20); }, 500);
+        setTimeout(() => { localStream = v.captureStream ? v.captureStream(24) : v.mozCaptureStream(24); }, 500);
     } else {
         const img = new Image();
         img.onload = () => {
             const ctx = canvas.getContext('2d');
-            canvas.width = 854; canvas.height = 480;
-            ctx.drawImage(img, 0, 0, 854, 480);
+            canvas.width = 1280; canvas.height = 720;
+            ctx.drawImage(img, 0, 0, 1280, 720);
             v.style.display = "none"; canvas.style.display = "block";
             localStream = canvas.captureStream(1);
         };
@@ -162,37 +192,29 @@ function handleFile(event) {
     log("Arquivo carregado.");
 }
 
-async function startCapture(type) {
+async function startCapture() {
     try {
         if(localStream) localStream.getTracks().forEach(t => t.stop());
-        localStream = await navigator.mediaDevices.getUserMedia({ video: { width: 854, height: 480, frameRate: 20 }, audio: true });
+        localStream = await navigator.mediaDevices.getUserMedia({ video: { width: 1280, height: 720 }, audio: true });
         document.getElementById('localVideo').style.display = "block";
         document.getElementById('photoCanvas').style.display = "none";
         document.getElementById('localVideo').srcObject = localStream;
-        log("Câmera ativa.");
+        log("Câmera Online.");
     } catch (e) { log("Erro de permissão."); }
 }
 
-function connectToPeer(idOverride) {
-    const id = idOverride || document.getElementById('remoteID').value;
-    const name = document.getElementById('targetName').value || ("TV-" + id);
-    
-    if(!id || !localStream) return alert("Selecione a Galeria ou Câmera primeiro!");
-    
-    // SALVAMENTO AUTOMÁTICO NA API
-    db.ref('users/' + myId + '/agenda/' + id).set({ name: name, id: id });
-    
+function connectToPeer() {
+    const id = document.getElementById('remoteID').value;
+    if(!id || !localStream) return alert("Selecione a mídia e insira o ID!");
     peer.call(id, localStream);
-    log("Conectando...");
+    log("Transmitindo para " + id);
 }
-
-function delItem(id) { if(confirm("Apagar?")) db.ref('users/' + myId + '/agenda/' + id).remove(); }
 
 function openTab(id) {
     document.querySelectorAll('.pnl, .tab').forEach(e => e.classList.remove('on'));
     document.getElementById(id).classList.add('on');
-    const tabId = "t-" + id.split('-')[1];
-    document.getElementById(tabId).classList.add('on');
+    const tId = "t-" + id.split('-')[1];
+    if(document.getElementById(tId)) document.getElementById(tId).classList.add('on');
 }
 
 function log(m) { document.getElementById('sysLog').innerText = "> " + m; }
