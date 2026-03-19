@@ -616,6 +616,9 @@ input[type=range]::-webkit-slider-thumb{-webkit-appearance:none;width:14px;heigh
 
 <script>
 const $ = id => document.getElementById(id);
+// Helper seguro — não lança erro se elemento não existe
+const on = (id, ev, fn) => { const el=$(id); if(el) el.addEventListener(ev, fn); };
+const set = (id, prop, val) => { const el=$(id); if(el) el[prop]=val; };
 let toastT, mediaStream = null, statsIv = null, galItems = [];
 
 function toast(msg, type='inf') {
@@ -633,6 +636,8 @@ document.querySelectorAll('.tab').forEach(t=>{
     document.querySelectorAll('.tab').forEach(x=>x.classList.remove('on'));
     document.querySelectorAll('.pnl').forEach(x=>x.classList.remove('on'));
     t.classList.add('on'); $('p-'+t.dataset.p).classList.add('on');
+    // Garante que idBig mostra o ID ao entrar na aba connect
+    if(t.dataset.p==='connect'){ const el=$('idBig'); if(el) el.textContent=myId; }
   });
 });
 
@@ -647,24 +652,34 @@ document.querySelectorAll('#mtabs .stab').forEach(b=>{
 
 // ID
 let myId='';
-function setId(id){myId=id;$('idDisplay').textContent=id;$('idBig').textContent=id;localStorage.setItem('stv_id',id);}
-function initId(){setId(localStorage.getItem('stv_id')||String(Math.floor(100000+Math.random()*900000)));}
-$('idBadge').onclick=()=>navigator.clipboard.writeText(myId).then(()=>toast('ID copiado!','ok'));
-$('btnCopyId').onclick=()=>navigator.clipboard.writeText(myId).then(()=>toast('ID copiado!','ok'));
-$('btnNewId').onclick=()=>{setId(String(Math.floor(100000+Math.random()*900000)));toast('Novo ID gerado!');};
-$('btnConnectId').onclick=()=>{
+function setId(id){
+  myId=id;
+  // Atualiza todos os elementos que mostram o ID (podem não existir ainda)
+  const els=['idDisplay','idBig'];
+  els.forEach(name=>{ const el=$(name); if(el) el.textContent=id; });
+  localStorage.setItem('stv_id',id);
+}
+function initId(){
+  const saved=localStorage.getItem('stv_id');
+  const id=saved&&/^\d{6}$/.test(saved)?saved:String(Math.floor(100000+Math.random()*900000));
+  setId(id);
+}
+on('idBadge','click',()=>navigator.clipboard.writeText(myId).then(()=>toast('ID copiado!','ok')));
+on('btnCopyId','click',()=>navigator.clipboard.writeText(myId).then(()=>toast('ID copiado!','ok')));
+on('btnNewId','click',()=>{setId(String(Math.floor(100000+Math.random()*900000)));toast('Novo ID gerado!');});
+on('btnConnectId','click',()=>{
   const id=$('targetId').value.trim();
   if(!/^\d{6}$/.test(id)){toast('ID inválido — 6 dígitos','err');return;}
   $('connSt').style.color='var(--cy)';$('connSt').textContent='Conectando...';
   setTimeout(()=>{
-    $('connSt').style.color='var(--gr)';$('connSt').textContent=`✓ Conectado ao ID ${id}`;
-    toast(`Conectado: ${id}`,'ok');slog(`Conexão com ID ${id}`,'ok');
+    $('connSt').style.color='var(--gr)';$('connSt').textContent='✓ Conectado ao ID '+id;
+    toast('Conectado: '+id,'ok');slog('Conexão com ID '+id,'ok');
     const pl=$('peerList');if(pl.querySelector('.emp'))pl.innerHTML='';
     const d=document.createElement('div');d.className='peeri on';
-    d.innerHTML=`<div class="pdot on"></div><div style="flex:1;font-weight:700;color:var(--wh);font-size:13px;">Dispositivo</div><div style="font-family:'Share Tech Mono',monospace;font-size:11px;color:var(--tx2);">#${id}</div>`;
+    d.innerHTML='<div class="pdot on"></div><div style="flex:1;font-weight:700;color:var(--wh);font-size:13px;">Dispositivo</div><div style="font-family:\'Share Tech Mono\',monospace;font-size:11px;color:var(--tx2);">#'+id+'</div>';
     pl.appendChild(d);$('sPeer').textContent=pl.querySelectorAll('.peeri').length;
   },1400);
-};
+});
 
 // Player principal
 const mainVid=$('mainVid'),mainImg=$('mainImg');
@@ -793,9 +808,9 @@ function loadChannels(text,src){
     ilog(`${channels.length} canais! Salve a lista.`,'ok');toast(`${channels.length} canais carregados! Salve a lista.`,'ok');
     activeId=null;updateInfo('(não salva)');buildFilters();renderCh(channels);
     $('btnClearList').style.display='';
-    $('saveSection').style.display='';
-    $('saveListName').value=src.replace(/\.(m3u8?|txt)$/i,'').replace(/^.*[\\/]/,'').substring(0,35);
-    $('saveInfo').textContent=`${channels.length} canais · ${new Set(channels.map(c=>c.group)).size} categorias`;
+    const ss=$('saveSection');if(ss)ss.style.display='';
+    const sln=$('saveListName');if(sln)sln.value=src.replace(/\.(m3u8?|txt)$/i,'').replace(/^.*[\\/]/,'').substring(0,35);
+    const si=$('saveInfo');if(si)si.textContent=channels.length+' canais · '+new Set(channels.map(function(c){return c.group;})).size+' categorias';
     renderSaved();
   }catch(e){ilog('Erro: '+e.message,'err');toast('Erro ao parsear M3U','err');}
 }
@@ -830,31 +845,40 @@ function renderCh(list){
     el.appendChild(div);});
 }
 
-$('btnSaveList').onclick=()=>{
-  const name=$('saveListName').value.trim();
+on('btnSaveList','click',function(){
+  const name=($('saveListName')||{value:''}).value.trim();
   if(!name){toast('Digite um nome para a lista','err');return;}
   if(!channels.length){toast('Nenhum canal para salvar','err');return;}
   const lists=getLS(),id=Date.now().toString();
   lists.unshift({id,name,channels,total:channels.length,cats:new Set(channels.map(c=>c.group)).size,logos:channels.filter(c=>c.logo).length,savedAt:new Date().toLocaleDateString('pt-BR')});
   putLS(lists);activeId=id;
-  $('saveSection').style.display='none';$('saveListName').value='';
+  const ss=$('saveSection');if(ss)ss.style.display='none';
+  const sln=$('saveListName');if(sln)sln.value='';
   ilog(`Lista "${name}" salva com ${channels.length} canais`,'ok');toast(`Lista "${name}" salva!`,'ok');
   renderSaved();updateInfo(name);
-};
+});
 
 function loadSaved(id){
   const entry=getLS().find(l=>l.id===id);if(!entry)return;
   channels=entry.channels;activeId=id;
   ilog(`Carregando: "${entry.name}" (${entry.total} canais)`,'ok');toast(`Lista "${entry.name}" carregada!`,'ok');
   updateInfo(entry.name);buildFilters();renderCh(channels);
-  $('btnClearList').style.display='';$('saveSection').style.display='none';renderSaved();
+  $('btnClearList').style.display='';
+  const ss=$('saveSection');if(ss)ss.style.display='none';
+  renderSaved();
 }
 
 function confirmDel(id,name){delId=id;$('modalMsg').textContent=`Excluir a lista "${name}"? Não pode ser desfeito.`;$('modalDel').classList.add('open');}
 
 function delList(id){
   const lists=getLS(),entry=lists.find(l=>l.id===id);putLS(lists.filter(l=>l.id!==id));
-  if(activeId===id){channels=[];activeId=null;renderCh([]);buildFilters();updateInfo('—');$('btnClearList').style.display='none';$('iptvNow').style.display='none';$('iptvOvl').classList.remove('hide');$('saveSection').style.display='none';iv.src='';}
+  if(activeId===id){
+    channels=[];activeId=null;renderCh([]);buildFilters();updateInfo('—');
+    $('btnClearList').style.display='none';
+    $('iptvNow').style.display='none';$('iptvOvl').classList.remove('hide');
+    const ss=$('saveSection');if(ss)ss.style.display='none';
+    iv.src='';
+  }
   ilog(`Lista "${entry?entry.name:id}" excluída`,'wrn');toast('Lista excluída');renderSaved();
 }
 
@@ -939,36 +963,39 @@ $('btnQuickSave').onclick=async()=>{
 };
 $('quickUrl').onkeydown=e=>{if(e.key==='Enter')$('btnQuickSave').click();};
 
-$('btnLoadUrl').onclick=async()=>{
-  const url=$('m3uUrl').value.trim();if(!url){toast('Insira uma URL','err');return;}
-  $('btnLoadUrl').textContent='⏳';$('btnLoadUrl').disabled=true;ilog('Baixando: '+url,'inf');
-  try{
-    const proxies=[url,`https://api.allorigins.win/raw?url=${encodeURIComponent(url)}`,`https://corsproxy.io/?${encodeURIComponent(url)}`];
-    let text=null;
-    for(const p of proxies){try{const r=await fetch(p,{signal:AbortSignal.timeout(15000)});if(r.ok){const t=await r.text();if(t.includes('#EXTM3U')||t.includes('#EXTINF')){text=t;break;}}}catch{continue;}}
-    if(!text)throw new Error('Não foi possível baixar (verifique URL)');
-    loadChannels(text,url);
-  }catch(e){ilog('Erro: '+e.message,'err');toast('Erro: '+e.message,'err');}
-  finally{$('btnLoadUrl').textContent='⬇ Carregar';$('btnLoadUrl').disabled=false;}
-};
+// btnLoadUrl removido — carregamento agora é via btnQuickSave ou arquivo
 
-$('m3uFile').onchange=e=>{
+on('m3uFile','change',function(e){
   const f=e.target.files[0];if(!f)return;
-  ilog(`Lendo: ${f.name} (${(f.size/1024).toFixed(1)}KB)`,'inf');
-  const r=new FileReader();r.onload=ev=>loadChannels(ev.target.result,f.name);r.onerror=()=>{ilog('Erro ao ler','err');toast('Erro ao ler arquivo','err');};
+  ilog('Lendo: '+f.name+' ('+(f.size/1024).toFixed(1)+'KB)','inf');
+  const r=new FileReader();
+  r.onload=function(ev){loadChannels(ev.target.result,f.name);};
+  r.onerror=function(){ilog('Erro ao ler','err');toast('Erro ao ler arquivo','err');};
   r.readAsText(f,'UTF-8');e.target.value='';
-};
-['dragover','dragleave','drop'].forEach(ev=>$('m3uDZ').addEventListener(ev,e=>{
-  e.preventDefault();if(ev==='dragover')$('m3uDZ').classList.add('drag');else if(ev==='dragleave')$('m3uDZ').classList.remove('drag');
-  else{$('m3uDZ').classList.remove('drag');const f=e.dataTransfer.files[0];if(f){const r=new FileReader();r.onload=ev2=>loadChannels(ev2.target.result,f.name);r.readAsText(f,'UTF-8');}}
-}));
+});
+(function(){
+  const dz=$('m3uDZ');if(!dz)return;
+  ['dragover','dragleave','drop'].forEach(function(ev){
+    dz.addEventListener(ev,function(e){
+      e.preventDefault();
+      if(ev==='dragover')dz.classList.add('drag');
+      else if(ev==='dragleave')dz.classList.remove('drag');
+      else{
+        dz.classList.remove('drag');
+        var f=e.dataTransfer.files[0];
+        if(f){var r=new FileReader();r.onload=function(ev2){loadChannels(ev2.target.result,f.name);};r.readAsText(f,'UTF-8');}
+      }
+    });
+  });
+}());
 
-$('btnClearList').onclick=()=>{
+on('btnClearList','click',()=>{
   channels=[];activeId=null;buildFilters();renderCh([]);updateInfo('—');
-  $('btnClearList').style.display='none';$('saveSection').style.display='none';
+  $('btnClearList').style.display='none';
+  const ss=$('saveSection');if(ss)ss.style.display='none';
   $('iptvNow').style.display='none';$('iptvOvl').classList.remove('hide');iv.src='';
   renderSaved();ilog('Lista descarregada','wrn');toast('Lista removida');
-};
+});
 
 // HLS.js
 const hlsEl=document.createElement('script');hlsEl.src='https://cdn.jsdelivr.net/npm/hls.js@latest/dist/hls.min.js';document.head.appendChild(hlsEl);
@@ -977,7 +1004,7 @@ const hlsEl=document.createElement('script');hlsEl.src='https://cdn.jsdelivr.net
 initId();renderSaved();updateInfo('—');
 slog('Screen TV iniciado','ok');slog('Aguardando ações...','inf');
 ilog('IPTV engine pronto','ok');
-const sv=getLS();if(sv.length)ilog(`${sv.length} lista(s) salva(s)`,'inf');
+const sv=getLS();if(sv.length)ilog(sv.length+' lista(s) salva(s)','inf');
 </script>
 </body>
 </html>
