@@ -476,36 +476,57 @@ input[type=range]::-webkit-slider-thumb{-webkit-appearance:none;width:14px;heigh
         </div>
 
         <div class="fc">
-          <!-- Carregar M3U + Salvar no mesmo card -->
+
+          <!-- ── ADICIONAR LISTA ── -->
           <div class="card">
-            <div class="ctitle">📂 Carregar Lista M3U</div>
-            <label class="lbl">URL da Lista</label>
-            <div class="fr" style="margin-bottom:10px;">
-              <input class="inp" id="m3uUrl" placeholder="http://...">
-              <button class="btn btn-cy bsm" id="btnLoadUrl" style="flex-shrink:0;">⬇ Carregar</button>
+            <div class="ctitle">➕ Adicionar Lista IPTV</div>
+
+            <!-- Sub-abas: Link direto | Arquivo -->
+            <div class="stabs" id="addTabs">
+              <button class="stab on" data-at="link">🔗 Nome + Link</button>
+              <button class="stab"    data-at="file">📁 Arquivo M3U</button>
             </div>
-            <label class="lbl">Arquivo .m3u / .m3u8</label>
-            <div class="dz" id="m3uDZ" style="padding:12px;">
-              <input type="file" id="m3uFile" accept=".m3u,.m3u8,.txt">
-              <div style="display:flex;align-items:center;gap:8px;justify-content:center;">
-                <span style="font-size:20px;">📁</span>
-                <p><strong>Clique ou arraste</strong> arquivo M3U</p>
+
+            <!-- Aba: Nome + Link (salva direto sem carregar) -->
+            <div id="at-link">
+              <label class="lbl">Nome da Lista</label>
+              <input class="inp" id="quickName" placeholder="Ex: Canais Brasil, Filmes HD..." style="margin-bottom:8px;">
+              <label class="lbl">Link da Lista M3U</label>
+              <input class="inp" id="quickUrl" placeholder="http://... ou https://..." style="margin-bottom:10px;">
+              <button class="btn btn-gr bfull" id="btnQuickSave">💾 Salvar Lista</button>
+              <div id="quickMsg" style="font-family:'Share Tech Mono',monospace;font-size:10px;color:var(--tx2);margin-top:6px;text-align:center;min-height:14px;"></div>
+            </div>
+
+            <!-- Aba: Arquivo (carrega e salva) -->
+            <div id="at-file" style="display:none;">
+              <label class="lbl">Nome da Lista</label>
+              <input class="inp" id="fileName" placeholder="Ex: Canais Brasil..." style="margin-bottom:8px;">
+              <div class="dz" id="m3uDZ" style="padding:12px;">
+                <input type="file" id="m3uFile" accept=".m3u,.m3u8,.txt">
+                <div style="display:flex;align-items:center;gap:8px;justify-content:center;">
+                  <span style="font-size:20px;">📁</span>
+                  <p><strong>Clique ou arraste</strong> arquivo .m3u</p>
+                </div>
+              </div>
+              <!-- campos ocultos compatibilidade -->
+              <input type="hidden" id="m3uUrl">
+              <input type="hidden" id="saveListName">
+              <div class="save-sec" id="saveSection" style="display:none;">
+                <button class="btn btn-gr bfull" id="btnSaveList">💾 Salvar Lista</button>
+                <div style="font-family:'Share Tech Mono',monospace;font-size:10px;color:var(--tx2);margin-top:5px;text-align:center;"><span id="saveInfo">0 canais</span></div>
               </div>
             </div>
-            <!-- Seção salvar — aparece após carregar -->
-            <div class="save-sec" id="saveSection">
-              <div class="save-lbl">💾 SALVAR LISTA</div>
-              <input class="inp" id="saveListName" placeholder="Nome da lista (ex: Canais Brasil)...">
-              <button class="btn btn-gr bfull" id="btnSaveList">💾 Salvar Lista</button>
-              <div style="font-family:'Share Tech Mono',monospace;font-size:10px;color:var(--tx2);margin-top:5px;text-align:center;"><span id="saveInfo">0 canais</span></div>
+          </div>
+
+          <!-- ── LISTAS SALVAS ── -->
+          <div class="card">
+            <div class="ctitle">📚 Minhas Listas <span id="savedCount" style="color:var(--cy);font-size:11px;"></span></div>
+            <div id="savedWrap">
+              <div class="emp"><div class="emp-i" style="font-size:22px;">📂</div><p>Nenhuma lista salva.<br>Adicione uma lista acima.</p></div>
             </div>
           </div>
 
-          <div class="card">
-            <div class="ctitle">📚 Listas Salvas <span id="savedCount" style="color:var(--cy);font-size:11px;"></span></div>
-            <div id="savedWrap"><div class="emp"><div class="emp-i" style="font-size:22px;">📂</div><p>Nenhuma lista salva.</p></div></div>
-          </div>
-
+          <!-- ── INFO LISTA ATIVA ── -->
           <div class="card">
             <div class="ctitle">📊 Lista Ativa</div>
             <div style="font-family:'Share Tech Mono',monospace;font-size:11px;color:var(--tx2);line-height:2.1;">
@@ -840,18 +861,83 @@ function delList(id){
 function renderSaved(){
   const lists=getLS();$('savedCount').textContent=lists.length?`(${lists.length})`:'';
   const wrap=$('savedWrap');
-  if(!lists.length){wrap.innerHTML='<div class="emp"><div class="emp-i" style="font-size:22px;">📂</div><p>Nenhuma lista salva.</p></div>';return;}
+  if(!lists.length){wrap.innerHTML='<div class="emp"><div class="emp-i" style="font-size:22px;">📂</div><p>Nenhuma lista salva.<br>Adicione uma lista acima.</p></div>';return;}
   wrap.innerHTML='';
-  lists.forEach(e=>{const div=document.createElement('div');div.className='sli'+(e.id===activeId?' on':'');
-    div.innerHTML=`<span style="font-size:16px;">${e.id===activeId?'▶':'📋'}</span><div class="sli-info"><div class="sli-name">${e.name}</div><div class="sli-meta">${e.total} canais · ${e.cats} cats · ${e.savedAt}</div></div><div class="sli-acts"><button class="sact" title="Carregar">▶</button><button class="sact del" title="Excluir">🗑</button></div>`;
+  lists.forEach(e=>{
+    const div=document.createElement('div');
+    div.className='sli'+(e.id===activeId?' on':'');
+    div.innerHTML=`
+      <span style="font-size:16px;flex-shrink:0;">${e.id===activeId?'▶':'📋'}</span>
+      <div class="sli-info" style="min-width:0;flex:1;">
+        <div class="sli-name">${e.name}</div>
+        <div class="sli-meta">${e.total} canais · ${e.cats} cats · ${e.savedAt}</div>
+        ${e.url?`<div style="font-size:10px;color:var(--tx2);font-family:monospace;overflow:hidden;text-overflow:ellipsis;white-space:nowrap;margin-top:2px;opacity:.6;">${e.url.substring(0,40)}...</div>`:''}
+      </div>
+      <div class="sli-acts">
+        <button class="sact" title="Carregar lista" style="color:var(--cy);">▶</button>
+        <button class="sact del" title="Excluir lista">🗑</button>
+      </div>`;
     div.querySelector('.sact:not(.del)').onclick=ev=>{ev.stopPropagation();loadSaved(e.id);};
     div.querySelector('.del').onclick=ev=>{ev.stopPropagation();confirmDel(e.id,e.name);};
-    div.onclick=()=>loadSaved(e.id);wrap.appendChild(div);});
+    div.onclick=()=>loadSaved(e.id);
+    wrap.appendChild(div);
+  });
 }
 
 $('mCancel').onclick=()=>{$('modalDel').classList.remove('open');delId=null;};
 $('mConfirm').onclick=()=>{if(delId)delList(delId);$('modalDel').classList.remove('open');delId=null;};
 $('modalDel').onclick=e=>{if(e.target===$('modalDel')){$('modalDel').classList.remove('open');delId=null;}};
+
+// Sub-abas adicionar lista IPTV
+document.querySelectorAll('#addTabs .stab').forEach(b=>{
+  b.addEventListener('click',()=>{
+    document.querySelectorAll('#addTabs .stab').forEach(x=>x.classList.remove('on'));
+    b.classList.add('on');
+    ['link','file'].forEach(t=>$('at-'+t).style.display=t===b.dataset.at?'':'none');
+  });
+});
+
+// Salvar lista por Nome + Link (sem carregar previamente)
+$('btnQuickSave').onclick=async()=>{
+  const name=$('quickName').value.trim();
+  const url=$('quickUrl').value.trim();
+  const msg=$('quickMsg');
+  if(!name){toast('Digite o nome da lista','err');return;}
+  if(!url||!url.startsWith('http')){toast('Insira um link válido (http/https)','err');return;}
+  msg.style.color='var(--cy)';msg.textContent='⏳ Baixando e verificando lista...';
+  $('btnQuickSave').disabled=true;
+  ilog(`Salvando lista "${name}" de ${url}`,'inf');
+  try{
+    const proxies=[url,
+      `https://api.allorigins.win/raw?url=${encodeURIComponent(url)}`,
+      `https://corsproxy.io/?${encodeURIComponent(url)}`];
+    let text=null;
+    for(const p of proxies){
+      try{const r=await fetch(p,{signal:AbortSignal.timeout(15000)});
+        if(r.ok){const t=await r.text();if(t.includes('#EXTM3U')||t.includes('#EXTINF')){text=t;break;}}
+      }catch{continue;}
+    }
+    if(!text)throw new Error('Não foi possível acessar a lista. Verifique o link.');
+    const parsed=parseM3U(text);
+    if(!parsed.length)throw new Error('Lista vazia ou formato inválido.');
+    const lists=getLS(),id=Date.now().toString();
+    lists.unshift({id,name,url,channels:parsed,total:parsed.length,
+      cats:new Set(parsed.map(c=>c.group)).size,
+      logos:parsed.filter(c=>c.logo).length,
+      savedAt:new Date().toLocaleDateString('pt-BR')});
+    putLS(lists);
+    msg.style.color='var(--gr)';msg.textContent=`✓ Salvo! ${parsed.length} canais`;
+    ilog(`Lista "${name}" salva — ${parsed.length} canais`,'ok');
+    toast(`✓ Lista "${name}" salva com ${parsed.length} canais!`,'ok');
+    $('quickName').value='';$('quickUrl').value='';
+    renderSaved();
+    setTimeout(()=>{msg.textContent='';},4000);
+  }catch(e){
+    msg.style.color='var(--rd)';msg.textContent='✗ '+e.message;
+    ilog('Erro: '+e.message,'err');toast('Erro: '+e.message,'err');
+  }finally{$('btnQuickSave').disabled=false;}
+};
+$('quickUrl').onkeydown=e=>{if(e.key==='Enter')$('btnQuickSave').click();};
 
 $('btnLoadUrl').onclick=async()=>{
   const url=$('m3uUrl').value.trim();if(!url){toast('Insira uma URL','err');return;}
