@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0">
-    <title>SCREEN TV - IPTV & REC</title>
+    <title>SCREEN TV - IPTV PRO</title>
     
     <script src="https://www.gstatic.com/firebasejs/9.1.3/firebase-app-compat.js"></script>
     <script src="https://www.gstatic.com/firebasejs/9.1.3/firebase-database-compat.js"></script>
@@ -19,8 +19,8 @@
         #hdr{display:flex;align-items:center;justify-content:space-between;padding:0 15px;height:60px;border-bottom:1px solid var(--bor);}
         .id-panel{background:var(--card);border:1px solid var(--cy);border-radius:8px;padding:5px 12px;cursor:pointer;}
         
-        #tabs{display:flex;background:#080c14;}
-        .tab{flex:1;padding:15px;text-align:center;cursor:pointer;font-weight:700;color:#475569;font-size:11px;}
+        #tabs{display:flex;background:#080c14;border-bottom:1px solid var(--bor);}
+        .tab{flex:1;padding:15px;text-align:center;cursor:pointer;font-weight:700;color:#475569;font-size:10px;text-transform:uppercase;}
         .tab.on{color:var(--cy);border-bottom:3px solid var(--cy);background:rgba(0,242,255,0.05);}
 
         #panels{flex:1;overflow-y:auto;padding:12px;}
@@ -41,11 +41,14 @@
         
         .inp{width:100%;padding:12px;background:#000;border:1px solid var(--bor);border-radius:8px;color:var(--cy);margin-top:8px;font-family:'Share Tech Mono';text-align:center;}
         
-        /* Lista IPTV */
-        .iptv-item{background:rgba(255,255,255,0.03);padding:10px;border-radius:8px;margin-top:8px;display:flex;justify-content:space-between;align-items:center;border-left:3px solid var(--gr);}
-        .iptv-info b{font-size:13px;display:block;}
-        .iptv-actions{display:flex;gap:5px;}
-        .mini-btn{padding:5px 8px;border-radius:4px;border:none;font-size:10px;cursor:pointer;font-weight:bold;}
+        /* Lista IPTV Estilizada */
+        .iptv-list-cont{margin-top:10px;max-height:300px;overflow-y:auto;}
+        .iptv-item{background:rgba(255,255,255,0.03);padding:12px;border-radius:8px;margin-bottom:8px;display:flex;justify-content:space-between;align-items:center;border-left:4px solid var(--gr);}
+        .iptv-info{flex:1;cursor:pointer;}
+        .iptv-info b{font-size:14px;display:block;color:#fff;}
+        .iptv-info small{font-size:10px;color:var(--gr);text-transform:uppercase;}
+        .iptv-actions{display:flex;gap:8px;}
+        .mini-btn{padding:6px 10px;border-radius:6px;border:none;font-size:12px;cursor:pointer;background:var(--bor);color:#fff;}
 
         .slog{background:#000;padding:8px;font-family:'Share Tech Mono';font-size:10px;color:#475569;margin-top:10px;border-radius:5px;}
     </style>
@@ -58,32 +61,35 @@
     </div>
 
     <div id="tabs">
-        <div class="tab on" onclick="openTab('p-send')">TRANSMITIR</div>
-        <div class="tab" onclick="openTab('p-receive')">RECEBER</div>
+        <div class="tab on" id="t-iptv" onclick="openTab('p-iptv')">Canais</div>
+        <div class="tab" id="t-send" onclick="openTab('p-send')">Transmitir</div>
+        <div class="tab" id="t-receive" onclick="openTab('p-receive')">Receber</div>
     </div>
 
     <div id="panels">
-        <div class="pnl on" id="p-send">
+        <div class="pnl on" id="p-iptv">
+            <div class="card">
+                <div style="font-size:11px;color:var(--gr);font-weight:900;margin-bottom:8px;">GERENCIAR LISTA M3U</div>
+                <input type="text" id="iptvName" class="inp" placeholder="NOME DO CANAL">
+                <input type="text" id="iptvURL" class="inp" placeholder="URL .M3U8">
+                <button class="btn btn-gr" style="width:100%;margin-top:10px;" onclick="addIPTV()">➕ ADICIONAR CANAL</button>
+            </div>
+            <div id="iptvList" class="iptv-list-cont"></div>
+        </div>
+
+        <div class="pnl" id="p-send">
             <div class="card">
                 <div class="pvw-box"><video id="localVideo" autoplay playsinline muted></video></div>
                 <div style="display:grid;grid-template-columns:1fr 1fr;gap:8px;margin-top:10px;">
                     <button class="btn btn-cy" onclick="startCapture()">📷 Câmera</button>
-                    <button class="btn btn-gr" onclick="document.getElementById('fileInp').click()">🖼️ Galeria</button>
+                    <button class="btn btn-cy" style="background:#475569" onclick="document.getElementById('fileInp').click()">🖼️ Galeria</button>
                 </div>
                 <input type="file" id="fileInp" hidden accept="image/*,video/*" onchange="handleFile(event)">
             </div>
-
-            <div class="card">
-                <div style="font-size:10px;color:var(--gr);font-weight:900;margin-bottom:5px;">LISTA IPTV M3U</div>
-                <input type="text" id="iptvName" class="inp" placeholder="NOME DO CANAL">
-                <input type="text" id="iptvURL" class="inp" placeholder="URL .M3U8 / .M3U">
-                <button class="btn btn-gr" style="width:100%;margin-top:10px;" onclick="addIPTV()">➕ ADICIONAR NA LISTA</button>
-                <div id="iptvList"></div>
-            </div>
-
             <div class="card">
                 <input type="number" id="remoteID" class="inp" placeholder="ID DO DESTINO">
-                <button class="btn btn-cy" style="width:100%;margin-top:10px;height:50px;" onclick="connectToPeer()">🚀 CONECTAR SINAL</button>
+                <button class="btn btn-cy" style="width:100%;margin-top:10px;height:50px;" onclick="connectToPeer()">🚀 INICIAR TRANSMISSÃO</button>
+                <div id="sysLog" class="slog">> Selecione um canal ou câmera.</div>
             </div>
         </div>
 
@@ -92,12 +98,11 @@
                 <div class="pvw-box">
                     <video id="remoteVideo" autoplay playsinline></video>
                     <div class="v-tools">
-                        <button id="btnRec" class="v-btn" onclick="toggleRecord()" title="Gravar Transmissão">●</button>
+                        <button id="btnRec" class="v-btn" onclick="toggleRecord()" title="Gravar Sinal">●</button>
                         <button class="v-btn" onclick="toggleFS('remoteArea')">⛶</button>
                     </div>
                 </div>
-                <button class="btn btn-rd" style="width:100%;margin-top:10px;" onclick="location.reload()">🛑 ENCERRAR</button>
-                <div id="sysLog" class="slog">> Aguardando sinal...</div>
+                <button class="btn btn-rd" style="width:100%;margin-top:10px;" onclick="location.reload()">🛑 DESCONECTAR</button>
             </div>
         </div>
     </div>
@@ -122,43 +127,17 @@ async function init() {
             remoteStream = s;
             document.getElementById('remoteVideo').srcObject = s; 
             openTab('p-receive'); 
-            log("Sinal recebido com sucesso!");
         });
     });
 
     loadIPTV();
 }
 
-// --- GRAVAÇÃO NO RECEPTOR ---
-function toggleRecord() {
-    if (!remoteStream) return alert("Nenhum sinal para gravar!");
-    const btn = document.getElementById('btnRec');
-
-    if (mediaRecorder && mediaRecorder.state === "recording") {
-        mediaRecorder.stop();
-        btn.classList.remove('rec-on');
-    } else {
-        chunks = [];
-        mediaRecorder = new MediaRecorder(remoteStream);
-        mediaRecorder.ondataavailable = e => chunks.push(e.data);
-        mediaRecorder.onstop = () => {
-            const blob = new Blob(chunks, { type: 'video/webm' });
-            const a = document.createElement('a');
-            a.href = URL.createObjectURL(blob);
-            a.download = `Rec_ScreenTV_${Date.now()}.webm`;
-            a.click();
-        };
-        mediaRecorder.start();
-        btn.classList.add('rec-on');
-        log("Gravando sinal remoto...");
-    }
-}
-
-// --- SISTEMA IPTV ---
+// --- GESTÃO IPTV ---
 function addIPTV() {
     const name = document.getElementById('iptvName').value;
     const url = document.getElementById('iptvURL').value;
-    if(!name || !url) return alert("Preencha Nome e Link!");
+    if(!name || !url) return alert("Preencha os campos!");
 
     const id = Date.now();
     db.ref('users/'+myId+'/iptv/'+id).set({ id, name, url });
@@ -170,16 +149,21 @@ function loadIPTV() {
     db.ref('users/'+myId+'/iptv').on('value', snap => {
         const list = document.getElementById('iptvList');
         list.innerHTML = "";
-        if(!snap.val()) return;
-        Object.values(snap.val()).forEach(item => {
+        const data = snap.val();
+        if(!data) {
+            list.innerHTML = "<center style='opacity:0.4;font-size:12px;margin-top:20px;'>Lista vazia</center>";
+            return;
+        }
+        Object.values(data).forEach(item => {
             list.innerHTML += `
                 <div class="iptv-item">
-                    <div class="iptv-info" onclick="playIPTV('${item.url}')" style="cursor:pointer">
+                    <div class="iptv-info" onclick="playIPTV('${item.url}')">
                         <b>${item.name}</b>
+                        <small>Toque para carregar</small>
                     </div>
                     <div class="iptv-actions">
-                        <button class="mini-btn btn-cy" onclick="editIPTV('${item.id}', '${item.name}')">✏️</button>
-                        <button class="mini-btn btn-rd" onclick="delIPTV('${item.id}')">X</button>
+                        <button class="mini-btn" onclick="editIPTV('${item.id}', '${item.name}')">✏️</button>
+                        <button class="mini-btn" style="color:var(--rd)" onclick="delIPTV('${item.id}')">X</button>
                     </div>
                 </div>`;
         });
@@ -191,20 +175,44 @@ function playIPTV(url) {
     v.src = url;
     v.play().then(() => {
         localStream = v.captureStream ? v.captureStream(24) : v.mozCaptureStream(24);
-        log("IPTV carregado. Clique em CONECTAR.");
-    }).catch(() => alert("Erro ao carregar link IPTV. Verifique se é HTTPS e direto."));
+        log("Canal carregado! Vá em TRANSMITIR.");
+        openTab('p-send');
+    }).catch(() => alert("Erro: Este link pode estar offline ou bloqueado por CORS."));
 }
 
 function editIPTV(id, oldName) {
-    const newName = prompt("Novo nome para o canal:", oldName);
+    const newName = prompt("Editar nome do canal:", oldName);
     if(newName) db.ref('users/'+myId+'/iptv/'+id).update({ name: newName });
 }
 
 function delIPTV(id) {
-    if(confirm("Excluir canal?")) db.ref('users/'+myId+'/iptv/'+id).remove();
+    if(confirm("Excluir canal da lista?")) db.ref('users/'+myId+'/iptv/'+id).remove();
 }
 
-// --- MÍDIA E CONEXÃO ---
+// --- GRAVAÇÃO (RECEPTOR) ---
+function toggleRecord() {
+    if (!remoteStream) return;
+    const btn = document.getElementById('btnRec');
+    if (mediaRecorder && mediaRecorder.state === "recording") {
+        mediaRecorder.stop();
+        btn.classList.remove('rec-on');
+    } else {
+        chunks = [];
+        mediaRecorder = new MediaRecorder(remoteStream);
+        mediaRecorder.ondataavailable = e => chunks.push(e.data);
+        mediaRecorder.onstop = () => {
+            const blob = new Blob(chunks, { type: 'video/webm' });
+            const a = document.createElement('a');
+            a.href = URL.createObjectURL(blob);
+            a.download = `Sinal_TV_${Date.now()}.webm`;
+            a.click();
+        };
+        mediaRecorder.start();
+        btn.classList.add('rec-on');
+    }
+}
+
+// --- MÍDIA ---
 async function startCapture() {
     localStream = await navigator.mediaDevices.getUserMedia({ video: true, audio: true });
     document.getElementById('localVideo').srcObject = localStream;
@@ -219,8 +227,9 @@ function handleFile(event) {
 
 function connectToPeer() {
     const id = document.getElementById('remoteID').value;
-    if(!id || !localStream) return alert("Prepare a mídia e coloque o ID!");
+    if(!id || !localStream) return alert("ID ou Mídia ausente!");
     peer.call(id, localStream);
+    log("Transmitindo...");
 }
 
 function toggleFS(id) {
@@ -232,7 +241,8 @@ function toggleFS(id) {
 function openTab(id) {
     document.querySelectorAll('.pnl, .tab').forEach(e => e.classList.remove('on'));
     document.getElementById(id).classList.add('on');
-    event.currentTarget.classList.add('on');
+    const tabId = "t-" + id.split('-')[1];
+    document.getElementById(tabId).classList.add('on');
 }
 
 function log(m) { document.getElementById('sysLog').innerText = "> " + m; }
