@@ -3,13 +3,11 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0">
-    <title>Screen TV - ID Único Firebase</title>
-    
+    <title>Screen TV - Fix Stream</title>
     <script src="https://www.gstatic.com/firebasejs/9.1.3/firebase-app-compat.js"></script>
     <script src="https://www.gstatic.com/firebasejs/9.1.3/firebase-database-compat.js"></script>
     <script src="https://unpkg.com/peerjs@1.4.7/dist/peerjs.min.js"></script>
     <link href="https://fonts.googleapis.com/css2?family=Exo+2:wght@400;700;900&family=Share+Tech+Mono&display=swap" rel="stylesheet">
-
     <style>
         :root {
             --bg:#06080f; --sur:#0c1220; --card:#101828; --bor:#1c2f50;
@@ -18,38 +16,25 @@
         }
         *,*::before,*::after{box-sizing:border-box;margin:0;padding:0;}
         body{background:var(--bg);font-family:'Exo 2',sans-serif;color:var(--tx);height:100vh;overflow:hidden;}
-        
-        #app{display:flex;flex-direction:column;height:100vh;max-width:800px;margin:0 auto;position:relative;z-index:1;}
-        
+        #app{display:flex;flex-direction:column;height:100vh;max-width:800px;margin:0 auto;}
         #hdr{display:flex;align-items:center;justify-content:space-between;padding:0 20px;height:70px;border-bottom:1px solid var(--bor);background:rgba(6,8,15,0.95);}
         .id-panel{background:var(--card);border:1px solid var(--cy);border-radius:10px;padding:8px 15px;cursor:pointer;}
         .id-label{font-size:9px;color:var(--cy);letter-spacing:1px;font-weight:700;}
         .id-val{font-family:'Share Tech Mono',monospace;font-size:20px;color:#fff;letter-spacing:2px;}
-
         #tabs{display:flex;background:#0a0f1d;}
         .tab{flex:1;padding:15px;text-align:center;cursor:pointer;font-weight:700;color:var(--tx2);}
         .tab.on{color:var(--cy);border-bottom:3px solid var(--cy);background:rgba(0,229,255,0.05);}
-
         #panels{flex:1;overflow-y:auto;padding:15px;}
         .pnl{display:none;} .pnl.on{display:block;}
-
         .card{background:var(--card);border:1px solid var(--bor);border-radius:15px;padding:15px;margin-bottom:15px;}
         .pvw{width:100%;aspect-ratio:16/9;background:#000;border-radius:10px;overflow:hidden;border:1px solid var(--bor);display:flex;align-items:center;justify-content:center;position:relative;}
-        video{width:100%;height:100%;object-fit:contain;}
-        
+        video, img{width:100%;height:100%;object-fit:contain;display:none;}
         .mctrl{display:grid;grid-template-columns:1fr 1fr;gap:10px;margin-top:10px;}
         .btn{padding:12px;border:none;border-radius:8px;font-weight:700;cursor:pointer;display:flex;align-items:center;justify-content:center;gap:8px;}
         .btn-cy{background:var(--bl);color:#fff;}
         .btn-gh{background:var(--sur);border:1px solid var(--bor);color:var(--tx);}
         .btn-rd{background:rgba(255,45,85,0.1);border:1px solid var(--rd);color:var(--rd);}
-        
-        .connect-box{display:flex;flex-direction:column;gap:10px;margin-top:10px;}
-        .inp{width:100%;padding:12px;background:#000;border:1px solid var(--bor);border-radius:8px;color:var(--cy);font-family:'Share Tech Mono',monospace;font-size:18px;text-align:center;}
-        
-        .agenda-list{margin-top:10px;display:flex;flex-direction:column;gap:8px;}
-        .contact-item{background:var(--sur);padding:10px 15px;border-radius:8px;display:flex;justify-content:space-between;align-items:center;border:1px solid var(--bor);}
-        .contact-id{font-family:'Share Tech Mono',monospace;color:var(--cy);font-size:14px;}
-
+        .inp{width:100%;padding:12px;background:#000;border:1px solid var(--bor);border-radius:8px;color:var(--cy);font-family:'Share Tech Mono',monospace;margin-top:5px;}
         .slog{background:#000;padding:10px;height:60px;overflow-y:auto;font-family:'Share Tech Mono',monospace;font-size:11px;border-radius:8px;color:var(--tx2);margin-top:10px;}
     </style>
 </head>
@@ -57,202 +42,176 @@
 <div id="app">
     <div id="hdr">
         <div class="logo-tx">SCREEN TV</div>
-        <div class="id-panel" id="copyId">
-            <div class="id-label">ID ÚNICO ATIVO</div>
-            <div class="id-val" id="my-id">CARREGANDO...</div>
+        <div class="id-panel" onclick="copyId()">
+            <div class="id-label">MEU ID ÚNICO</div>
+            <div class="id-val" id="my-id">...</div>
         </div>
     </div>
-
     <div id="tabs">
         <div class="tab on" data-target="p-send">TRANSMITIR</div>
         <div class="tab" data-target="p-receive">RECEBER</div>
         <div class="tab" data-target="p-agenda">AGENDA</div>
     </div>
-
     <div id="panels">
         <div class="pnl on" id="p-send">
             <div class="card">
                 <div class="pvw">
-                    <video id="localVideo" autoplay playsinline muted></video>
-                    <div id="localOvl" style="position:absolute;">🎥 AGUARDANDO MÍDIA</div>
+                    <video id="localVideo" autoplay playsinline muted style="display:block"></video>
+                    <canvas id="fileCanvas" style="display:none"></canvas> <div id="localOvl" style="position:absolute; pointer-events:none;">🎥 AGUARDANDO FONTE</div>
                 </div>
                 <div class="mctrl">
                     <button class="btn btn-cy" onclick="startCapture('screen')">📺 Tela</button>
                     <button class="btn btn-cy" onclick="startCapture('camera')">📷 Câmera</button>
+                    <button class="btn btn-gh" onclick="document.getElementById('fileInp').click()">🖼️ Galeria</button>
                     <button class="btn btn-rd" onclick="stopAll()">🛑 Parar</button>
                 </div>
+                <input type="file" id="fileInp" hidden accept="image/*,video/*" onchange="handleFile(event)">
             </div>
-
             <div class="card">
-                <div class="id-label">CONECTAR NOVO DISPOSITIVO</div>
-                <div class="connect-box">
-                    <input type="text" id="targetName" class="inp" placeholder="NOME (EX: TV SALA)" style="font-size: 14px; height: 40px;">
-                    <input type="text" id="remoteID" class="inp" placeholder="DIGITE O ID">
-                    <button class="btn btn-cy" onclick="connectToPeer()">VINCULAR E CONECTAR</button>
-                </div>
+                <input type="text" id="targetName" class="inp" placeholder="NOME DO DISPOSITIVO">
+                <input type="text" id="remoteID" class="inp" placeholder="ID DO RECEPTOR">
+                <button class="btn btn-cy" style="width:100%; margin-top:10px" onclick="connectToPeer()">VINCULAR E CONECTAR</button>
             </div>
         </div>
-
         <div class="pnl" id="p-receive">
             <div class="card">
                 <div class="pvw">
-                    <video id="remoteVideo" autoplay playsinline></video>
-                    <div id="remoteOvl" style="position:absolute; text-align:center;">
-                        <div class="id-val">PRONTO PARA RECEBER</div>
-                    </div>
+                    <video id="remoteVideo" autoplay playsinline style="display:block"></video>
+                    <div id="remoteOvl" style="position:absolute;">⌛ AGUARDANDO SINAL...</div>
                 </div>
             </div>
         </div>
-
         <div class="pnl" id="p-agenda">
-            <div class="card">
-                <div class="id-label">DISPOSITIVOS SALVOS</div>
-                <div class="agenda-list" id="agendaItems"></div>
-            </div>
+            <div class="card"><div class="id-label">FAVORITOS</div><div id="agendaItems"></div></div>
         </div>
-
-        <div class="slog" id="sysLog">> Inicializando Firebase...</div>
+        <div class="slog" id="sysLog">> Sistema Pronto.</div>
     </div>
 </div>
 
 <script>
-// --- CONFIGURAÇÃO FIREBASE ---
-const firebaseConfig = {
-    apiKey: "AIzaZtnv4FdBRJg86c3ISVIHojdQOb92L891sa3",
-    authDomain: "screentv-p2p.firebaseapp.com",
-    databaseURL: "https://screentv-p2p-default-rtdb.firebaseio.com",
-    projectId: "screentv-p2p",
-    storageBucket: "screentv-p2p.appspot.com",
-};
+const firebaseConfig = { apiKey: "AIzaZtnv4FdBRJg86c3ISVIHojdQOb92L891sa3", databaseURL: "https://screentv-p2p-default-rtdb.firebaseio.com" };
 firebase.initializeApp(firebaseConfig);
-const db = firebase.database();
 
-let peer;
-let myId = "";
-let localStream;
+let peer, myId, localStream, currentCall;
 
-// --- GERENCIAMENTO DE ID ÚNICO ---
-async function setupIdentity() {
-    let storedId = localStorage.getItem('screentv_persistent_id');
-    
-    if (!storedId) {
-        // Se não tem ID, gera um novo de 6 dígitos
-        storedId = Math.floor(100000 + Math.random() * 900000).toString();
-        localStorage.setItem('screentv_persistent_id', storedId);
-        
-        // Registra no Firebase para garantir que esse ID pertence a este "usuário"
-        db.ref('users/' + storedId).set({ status: 'online', lastSeen: Date.now() });
-    }
-    
-    myId = storedId;
+function initPeer() {
+    myId = localStorage.getItem('screentv_persistent_id') || Math.floor(100000 + Math.random() * 900000).toString();
+    localStorage.setItem('screentv_persistent_id', myId);
     document.getElementById('my-id').innerText = myId;
-    initPeer(myId);
-}
 
-function initPeer(id) {
-    peer = new Peer(id);
-
-    peer.on('open', () => {
-        log("Conectado ao Servidor com ID: " + id, "var(--gr)");
-    });
-
-    peer.on('call', (call) => {
-        log("Recebendo sinal externo...");
+    peer = new Peer(myId, { debug: 2 });
+    
+    peer.on('open', () => log("Online. ID: " + myId, "var(--gr)"));
+    
+    // RECEBENDO CHAMADA
+    peer.on('call', call => {
+        currentCall = call;
+        log("Recebendo Transmissão...");
         call.answer();
-        call.on('stream', (remoteStream) => {
-            document.getElementById('remoteVideo').srcObject = remoteStream;
+        call.on('stream', stream => {
+            document.getElementById('remoteVideo').srcObject = stream;
             document.getElementById('remoteOvl').style.display = "none";
         });
     });
-
-    peer.on('error', (err) => {
-        if(err.type === 'unavailable-id') {
-            log("ID em uso, tentando reconectar...", "var(--or)");
-            // Se o ID estiver "preso", ele tenta forçar a entrada após 2 segundos
-            setTimeout(() => location.reload(), 2000);
-        }
-    });
 }
 
-// --- TRANSMISSÃO E AGENDA ---
 async function startCapture(type) {
     try {
+        if(localStream) localStream.getTracks().forEach(t => t.stop());
         localStream = (type === 'screen') 
-            ? await navigator.mediaDevices.getDisplayMedia({ video: true })
+            ? await navigator.mediaDevices.getDisplayMedia({ video: true, audio: true })
             : await navigator.mediaDevices.getUserMedia({ video: true, audio: true });
+        
         document.getElementById('localVideo').srcObject = localStream;
         document.getElementById('localOvl').style.display = "none";
-        log("Fonte de mídia ativa.");
+        log("Sinal capturado.");
+
+        // Se já houver uma chamada ativa, atualiza o vídeo para o receptor
+        if(currentCall && currentCall.peerConnection) {
+            const videoTrack = localStream.getVideoTracks()[0];
+            const sender = currentCall.peerConnection.getSenders().find(s => s.track.kind === 'video');
+            sender.replaceTrack(videoTrack);
+            log("Sinal atualizado no receptor.");
+        }
     } catch (e) { log("Erro: " + e.message, "var(--rd)"); }
 }
 
-function connectToPeer(targetId = null, name = null) {
-    const id = targetId || document.getElementById('remoteID').value;
-    const nick = name || document.getElementById('targetName').value || "Dispositivo";
+function handleFile(event) {
+    const file = event.target.files[0];
+    if(!file) return;
+    const url = URL.createObjectURL(file);
+    const v = document.getElementById('localVideo');
     
-    if (!id) return alert("Insira o ID!");
-    if (!localStream) return alert("Ative a Tela ou Câmera antes!");
+    v.srcObject = null;
+    v.src = url;
+    v.play();
+    document.getElementById('localOvl').style.display = "none";
 
-    log("Conectando a: " + nick);
-    const call = peer.call(id, localStream);
-    
-    // Salva na Agenda do Firebase/Local
-    saveToAgenda(id, nick);
+    // Transforma o vídeo da galeria em Stream para enviar
+    setTimeout(() => {
+        localStream = v.captureStream ? v.captureStream() : v.mozCaptureStream();
+        if(currentCall) connectToPeer(); // Reconecta com o novo stream do arquivo
+        log("Transmitindo arquivo da galeria...");
+    }, 500);
 }
 
-function saveToAgenda(id, name) {
+function connectToPeer(target = null) {
+    const id = target || document.getElementById('remoteID').value;
+    if(!id) return alert("ID vazio!");
+    if(!localStream) return alert("Inicie a mídia primeiro!");
+
+    log("Transmitindo para " + id + "...");
+    currentCall = peer.call(id, localStream);
+    
+    if(!target) saveAgenda(id);
+}
+
+function saveAgenda(id) {
+    let name = document.getElementById('targetName').value || "Dispositivo";
     let agenda = JSON.parse(localStorage.getItem('screentv_agenda') || '[]');
-    if (!agenda.find(item => item.id === id)) {
-        agenda.push({ id, name });
+    if(!agenda.find(a => a.id === id)) {
+        agenda.push({id, name});
         localStorage.setItem('screentv_agenda', JSON.stringify(agenda));
         renderAgenda();
     }
 }
 
 function renderAgenda() {
-    const container = document.getElementById('agendaItems');
+    const cont = document.getElementById('agendaItems');
     const agenda = JSON.parse(localStorage.getItem('screentv_agenda') || '[]');
-    container.innerHTML = "";
-    
-    agenda.forEach(item => {
-        const div = document.createElement('div');
-        div.className = 'contact-item';
-        div.innerHTML = `
-            <div>
-                <div style="font-weight:700; font-size:14px">${item.name}</div>
-                <div class="contact-id">${item.id}</div>
-            </div>
-            <button class="btn btn-gh" style="padding:5px 12px" onclick="connectToPeer('${item.id}', '${item.name}')">LIGAR</button>
-        `;
-        container.appendChild(div);
+    cont.innerHTML = "";
+    agenda.forEach(a => {
+        cont.innerHTML += `<div style="background:var(--sur); padding:10px; margin-top:5px; border-radius:8px; display:flex; justify-content:space-between">
+            <span><b>${a.name}</b><br><small>${a.id}</small></span>
+            <button class="btn btn-cy" style="padding:5px 10px" onclick="connectToPeer('${a.id}')">LIGAR</button>
+        </div>`;
     });
 }
 
-// --- UTILITÁRIOS ---
-function log(msg, col = "") {
-    const l = document.getElementById('sysLog');
-    l.innerHTML += `<div style="color:${col}">> ${msg}</div>`;
-    l.scrollTop = l.scrollHeight;
+function log(m, c="") { 
+    const s = document.getElementById('sysLog');
+    s.innerHTML += `<div style="color:${c}">> ${m}</div>`;
+    s.scrollTop = s.scrollHeight;
 }
 
 function stopAll() {
-    if(localStream) localStream.getTracks().forEach(t => t.stop());
-    document.getElementById('localVideo').srcObject = null;
-    document.getElementById('localOvl').style.display = "flex";
+    location.reload(); // Forma mais limpa de resetar o Peer e a mídia
 }
 
-document.querySelectorAll('.tab').forEach(tab => {
-    tab.onclick = () => {
-        document.querySelectorAll('.tab, .pnl').forEach(el => el.classList.remove('on'));
-        tab.classList.add('on');
-        document.getElementById(tab.dataset.target).classList.add('on');
-    };
+function copyId() {
+    navigator.clipboard.writeText(myId);
+    alert("ID Copiado!");
+}
+
+document.querySelectorAll('.tab').forEach(t => {
+    t.onclick = () => {
+        document.querySelectorAll('.tab, .pnl').forEach(e => e.classList.remove('on'));
+        t.classList.add('on');
+        document.getElementById(t.dataset.target).classList.add('on');
+    }
 });
 
-window.onload = () => {
-    setupIdentity();
-    renderAgenda();
-};
+window.onload = () => { initPeer(); renderAgenda(); };
 </script>
 </body>
     </html>
