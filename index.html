@@ -3,54 +3,58 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0">
-    <title>Screen TV - ID Blindado</title>
+    <title>SCREEN TV - API CLOUD</title>
+    
     <script src="https://www.gstatic.com/firebasejs/9.1.3/firebase-app-compat.js"></script>
     <script src="https://www.gstatic.com/firebasejs/9.1.3/firebase-database-compat.js"></script>
     <script src="https://unpkg.com/peerjs@1.4.7/dist/peerjs.min.js"></script>
     <link href="https://fonts.googleapis.com/css2?family=Exo+2:wght@400;700;900&family=Share+Tech+Mono&display=swap" rel="stylesheet">
+
     <style>
         :root { --bg:#05070a; --sur:#0a0f18; --card:#0f172a; --bor:#1e293b; --cy:#00f2ff; --bl:#0066ff; --gr:#00ff88; --rd:#ff3366; --tx:#cbd5e1; }
         *,*::before,*::after{box-sizing:border-box;margin:0;padding:0;}
         body{background:var(--bg);font-family:'Exo 2',sans-serif;color:var(--tx);height:100vh;overflow:hidden;}
         #app{display:flex;flex-direction:column;height:100vh;max-width:600px;margin:0 auto;}
         
-        #hdr{display:flex;align-items:center;justify-content:space-between;padding:0 15px;height:65px;border-bottom:1px solid var(--bor);background:rgba(5,7,10,0.9);}
-        .id-panel{background:var(--card);border:1px solid var(--cy);border-radius:8px;padding:5px 12px;cursor:pointer;min-width:120px;text-align:center;}
-        .id-label{font-size:8px; color:var(--cy); font-weight:700; text-transform:uppercase;}
+        #hdr{display:flex;align-items:center;justify-content:space-between;padding:0 15px;height:70px;border-bottom:1px solid var(--bor);background:rgba(5,7,10,0.95);}
+        .id-panel{background:var(--card);border:1px solid var(--cy);border-radius:10px;padding:8px 15px;cursor:pointer;text-align:center;min-width:130px;}
         .id-val{font-family:'Share Tech Mono',monospace;font-size:20px;color:#fff;}
 
         #tabs{display:flex;background:#080c14;}
-        .tab{flex:1;padding:12px;text-align:center;cursor:pointer;font-weight:700;color:#64748b;font-size:12px;}
-        .tab.on{color:var(--cy);border-bottom:2px solid var(--cy);background:rgba(0,242,255,0.05);}
+        .tab{flex:1;padding:15px;text-align:center;cursor:pointer;font-weight:700;color:#64748b;font-size:12px;}
+        .tab.on{color:var(--cy);border-bottom:3px solid var(--cy);background:rgba(0,242,255,0.05);}
 
-        #panels{flex:1;overflow-y:auto;padding:12px;}
+        #panels{flex:1;overflow-y:auto;padding:15px;}
         .pnl{display:none;} .pnl.on{display:block;}
-        .card{background:var(--card);border:1px solid var(--bor);border-radius:12px;padding:12px;margin-bottom:12px;position:relative;}
+        .card{background:var(--card);border:1px solid var(--bor);border-radius:15px;padding:15px;margin-bottom:15px;position:relative;}
         
-        .pvw-container{width:100%;aspect-ratio:16/9;background:#000;border-radius:10px;overflow:hidden;border:1px solid var(--bor);position:relative;display:flex;align-items:center;justify-content:center;}
+        .pvw-box{width:100%;aspect-ratio:16/9;background:#000;border-radius:12px;overflow:hidden;border:1px solid var(--bor);position:relative;display:flex;align-items:center;justify-content:center;}
         video, canvas {width:100%;height:100%;object-fit:contain;}
         
-        .v-tools{position:absolute;bottom:8px;right:8px;display:flex;gap:6px;}
-        .v-btn{background:rgba(0,0,0,0.7);border:1px solid rgba(255,255,255,0.1);color:#fff;width:36px;height:36px;border-radius:50%;cursor:pointer;display:flex;align-items:center;justify-content:center;}
+        .v-tools{position:absolute;bottom:10px;right:10px;display:flex;gap:8px;z-index:10;}
+        .v-btn{background:rgba(0,0,0,0.7);border:1px solid rgba(255,255,255,0.1);color:#fff;width:40px;height:40px;border-radius:50%;cursor:pointer;display:flex;align-items:center;justify-content:center;}
 
-        .mctrl{display:grid;grid-template-columns:1fr 1fr;gap:8px;margin-top:10px;}
-        .btn{padding:10px;border:none;border-radius:6px;font-weight:700;cursor:pointer;font-size:11px;}
+        .mctrl{display:grid;grid-template-columns:1fr 1fr;gap:10px;margin-top:12px;}
+        .btn{padding:12px;border:none;border-radius:8px;font-weight:700;cursor:pointer;font-size:12px;display:flex;align-items:center;justify-content:center;}
         .btn-cy{background:var(--bl);color:#fff;}
         .btn-gh{background:var(--sur);border:1px solid var(--bor);color:var(--tx);}
         .btn-rd{background:rgba(255,51,102,0.1);border:1px solid var(--rd);color:var(--rd);}
         
-        .inp{width:100%;padding:12px;background:#000;border:1px solid var(--bor);border-radius:6px;color:var(--cy);margin-top:5px;font-family:'Share Tech Mono',monospace;font-size:16px;text-align:center;}
-        .slog{background:#000;padding:8px;height:50px;overflow-y:auto;font-family:'Share Tech Mono',monospace;font-size:10px;border-radius:6px;color:#475569;margin-top:8px;border:1px solid var(--bor);}
-        .recording-dot{width:10px;height:10px;background:var(--rd);border-radius:50%;position:absolute;top:10px;left:10px;display:none;animation:pulse 1s infinite;}
+        .inp{width:100%;padding:12px;background:#000;border:1px solid var(--bor);border-radius:8px;color:var(--cy);margin-top:8px;font-family:'Share Tech Mono',monospace;text-align:center;}
+        
+        .agenda-item{background:var(--sur);padding:12px;border-radius:10px;margin-bottom:8px;display:flex;justify-content:space-between;align-items:center;border:1px solid var(--bor);}
+        
+        .recording-dot{width:12px;height:12px;background:var(--rd);border-radius:50%;position:absolute;top:15px;left:15px;display:none;animation:pulse 1s infinite;}
         @keyframes pulse { 0%{opacity:1;} 50%{opacity:0.3;} 100%{opacity:1;} }
+        .slog{background:#000;padding:10px;height:55px;overflow-y:auto;font-family:'Share Tech Mono',monospace;font-size:11px;border-radius:8px;color:#475569;margin-top:10px;border:1px solid var(--bor);}
     </style>
 </head>
 <body>
 <div id="app">
     <div id="hdr">
-        <div style="font-weight:900; font-size:18px; color:var(--cy);">SCREEN TV</div>
+        <div style="font-weight:900; font-size:20px; color:var(--cy);">SCREEN TV</div>
         <div class="id-panel" onclick="copyId()">
-            <div class="id-label">ID FIXO FIREBASE</div>
+            <div style="font-size:8px; color:var(--cy)">ID API DATABASE</div>
             <div id="my-id" class="id-val">...</div>
         </div>
     </div>
@@ -58,12 +62,13 @@
     <div id="tabs">
         <div class="tab on" data-target="p-send">TRANSMITIR</div>
         <div class="tab" data-target="p-receive">RECEBER</div>
+        <div class="tab" data-target="p-agenda">AGENDA</div>
     </div>
 
     <div id="panels">
         <div class="pnl on" id="p-send">
             <div class="card">
-                <div class="pvw-container" id="localBox">
+                <div class="pvw-box" id="localBox">
                     <video id="localVideo" autoplay playsinline muted></video>
                     <canvas id="photoCanvas" style="display:none"></canvas>
                     <div class="v-tools"><button class="v-btn" onclick="toggleFS('localBox')">⛶</button></div>
@@ -77,14 +82,15 @@
                 <input type="file" id="fileInp" hidden accept="image/*,video/*" onchange="handleFile(event)">
             </div>
             <div class="card">
-                <input type="text" id="remoteID" class="inp" placeholder="DIGITE O ID DO RECEPTOR">
-                <button class="btn btn-cy" style="width:100%; margin-top:10px; height:50px; font-size:16px;" onclick="connectToPeer()">📡 CONECTAR AGORA</button>
+                <input type="text" id="targetName" class="inp" placeholder="NOME DO DISPOSITIVO">
+                <input type="text" id="remoteID" class="inp" placeholder="ID DO DESTINO">
+                <button class="btn btn-cy" style="width:100%; margin-top:10px; height:50px;" onclick="connectToPeer()">🚀 CONECTAR</button>
             </div>
         </div>
 
         <div class="pnl" id="p-receive">
             <div class="card">
-                <div class="pvw-container" id="remoteBox">
+                <div class="pvw-box" id="remoteBox">
                     <div id="recDot" class="recording-dot"></div>
                     <video id="remoteVideo" autoplay playsinline></video>
                     <div class="v-tools">
@@ -92,14 +98,21 @@
                         <button class="v-btn" onclick="toggleFS('remoteBox')">⛶</button>
                     </div>
                 </div>
-                <div id="sysLog" class="slog">> Aguardando sinal...</div>
+                <div id="sysLog" class="slog">> Sistema via Firebase API...</div>
+            </div>
+        </div>
+
+        <div class="pnl" id="p-agenda">
+            <div class="card">
+                <div style="font-size:10px; color:var(--cy); margin-bottom:10px;">AGENDA (SALVA NA NUVEM)</div>
+                <div id="agendaItems"></div>
             </div>
         </div>
     </div>
 </div>
 
 <script>
-// --- CONFIGURAÇÃO FIREBASE ---
+// --- CONEXÃO FIREBASE (BANCO DE DADOS) ---
 const firebaseConfig = { 
     apiKey: "AIzaZtnv4FdBRJg86c3ISVIHojdQOb92L891sa3", 
     databaseURL: "https://screentv-p2p-default-rtdb.firebaseio.com" 
@@ -109,55 +122,50 @@ const db = firebase.database();
 
 let peer, myId, localStream, remoteStream, mediaRecorder, recordedChunks = [];
 
-// --- LÓGICA DE TRAVA DE ID FIREBASE ---
-async function setupPersistentID() {
+// --- LÓGICA DE ID E AGENDA VIA API ---
+async function setupCloudData() {
+    // Busca ID no LocalStorage apenas como cache, mas a verdade vem do Banco
     let id = localStorage.getItem('screentv_id');
     
     if (!id) {
-        // Gera novo se for a primeira vez
         id = Math.floor(100000 + Math.random() * 900000).toString();
         localStorage.setItem('screentv_id', id);
-        // Salva no Firebase para garantir a posse do ID
-        await db.ref('users/' + id).set({ created: Date.now() });
     }
-    
+
     myId = id;
     document.getElementById('my-id').innerText = myId;
+
+    // Registra/Atualiza presença no Banco de Dados
+    db.ref('users/' + myId + '/profile').set({ lastSeen: Date.now(), status: 'online' });
+
+    // Sincroniza Agenda em tempo real da API
+    db.ref('users/' + myId + '/agenda').on('value', snapshot => {
+        renderAgenda(snapshot.val());
+    });
+
     initPeer(myId);
 }
 
 function initPeer(id) {
-    // Configurações Anti-Travamento (Bitrate baixo e Estabilidade)
-    peer = new Peer(id, {
-        config: { 'iceServers': [{ 'urls': 'stun:stun.l.google.com:19302' }] },
-        debug: 1
-    });
-
-    peer.on('open', () => log("ID Travado e Online: " + id, "var(--gr)"));
-    
+    peer = new Peer(id, { config: { 'iceServers': [{ 'urls': 'stun:stun.l.google.com:19302' }] }});
     peer.on('call', call => {
         call.answer();
         call.on('stream', s => {
             remoteStream = s;
             document.getElementById('remoteVideo').srcObject = s;
-            document.getElementById('sysLog').innerHTML = "> Transmissão Ativa!";
         });
     });
 }
 
-// --- FUNÇÕES DE MÍDIA ---
+// --- MÍDIA ---
 async function startCapture(type) {
     try {
         if(localStream) localStream.getTracks().forEach(t => t.stop());
-        const constraints = { video: { width: 1280, height: 720, frameRate: 24 }, audio: true };
-        
         localStream = (type === 'screen') 
             ? await navigator.mediaDevices.getDisplayMedia({ video: true, audio: true })
-            : await navigator.mediaDevices.getUserMedia(constraints);
-        
+            : await navigator.mediaDevices.getUserMedia({ video: { width: 1280, height: 720, frameRate: 24 }, audio: true });
         document.getElementById('localVideo').srcObject = localStream;
-        log("Mídia capturada com sucesso.");
-    } catch (e) { log("Erro: " + e.message, "var(--rd)"); }
+    } catch (e) { alert("Erro de permissão."); }
 }
 
 function handleFile(event) {
@@ -170,10 +178,7 @@ function handleFile(event) {
     if(file.type.startsWith('video')) {
         v.src = url; v.play();
         v.style.display = "block"; canvas.style.display = "none";
-        setTimeout(() => {
-            localStream = v.captureStream ? v.captureStream(24) : v.mozCaptureStream(24);
-            log("Transmitindo vídeo da galeria...");
-        }, 500);
+        setTimeout(() => { localStream = v.captureStream(24); }, 500);
     } else {
         const img = new Image();
         img.onload = () => {
@@ -182,52 +187,76 @@ function handleFile(event) {
             ctx.drawImage(img, 0, 0, 1280, 720);
             v.style.display = "none"; canvas.style.display = "block";
             localStream = canvas.captureStream(1);
-            log("Transmitindo foto da galeria...");
         };
         img.src = url;
     }
 }
 
-function connectToPeer() {
-    const target = document.getElementById('remoteID').value;
-    if(!target || !localStream) return alert("Ative a mídia e insira o ID!");
-    peer.call(target, localStream);
-    log("Chamada iniciada para: " + target);
+// --- CONEXÃO E AGENDA VIA API ---
+function connectToPeer(target = null) {
+    const id = target || document.getElementById('remoteID').value;
+    const name = document.getElementById('targetName').value || "Dispositivo";
+    if(!id || !localStream) return alert("Ative a mídia e coloque o ID!");
+    
+    peer.call(id, localStream);
+    if(!target) {
+        // SALVA NA API (FIREBASE)
+        db.ref('users/' + myId + '/agenda/' + id).set({ id: id, name: name });
+    }
+}
+
+function renderAgenda(data) {
+    const cont = document.getElementById('agendaItems');
+    cont.innerHTML = "";
+    if(!data) { cont.innerHTML = "<div style='font-size:11px'>Agenda vazia na nuvem.</div>"; return; }
+
+    Object.values(data).forEach(a => {
+        cont.innerHTML += `<div class="agenda-item">
+            <span><b>${a.name}</b><br><small style="color:var(--cy)">${a.id}</small></span>
+            <div style="display:flex; gap:5px">
+                <button class="btn btn-cy" style="padding:5px 10px" onclick="connectToPeer('${a.id}')">LIGAR</button>
+                <button class="btn btn-rd" style="padding:5px 10px" onclick="deleteContact('${a.id}')">X</button>
+            </div>
+        </div>`;
+    });
+}
+
+function deleteContact(id) {
+    if(confirm("Remover da nuvem?")) {
+        db.ref('users/' + myId + '/agenda/' + id).remove();
+    }
 }
 
 // --- UTILITÁRIOS ---
+function toggleRecord() {
+    if(!remoteStream) return;
+    const btn = document.getElementById('recBtn');
+    const dot = document.getElementById('recDot');
+    if (mediaRecorder && mediaRecorder.state === "recording") {
+        mediaRecorder.stop();
+        btn.innerHTML = "●"; dot.style.display = "none";
+    } else {
+        recordedChunks = [];
+        mediaRecorder = new MediaRecorder(remoteStream);
+        mediaRecorder.ondataavailable = e => recordedChunks.push(e.data);
+        mediaRecorder.onstop = () => {
+            const blob = new Blob(recordedChunks, { type: "video/webm" });
+            const a = document.createElement("a");
+            a.href = URL.createObjectURL(blob);
+            a.download = `Rec_${Date.now()}.webm`;
+            a.click();
+        };
+        mediaRecorder.start();
+        btn.innerHTML = "■"; dot.style.display = "block";
+    }
+}
+
 function toggleFS(id) {
     const el = document.getElementById(id);
     if (!document.fullscreenElement) el.requestFullscreen();
     else document.exitFullscreen();
 }
 
-function toggleRecord() {
-    if (!remoteStream) return alert("Sem sinal.");
-    const btn = document.getElementById('recBtn');
-    const dot = document.getElementById('recDot');
-    
-    if (mediaRecorder && mediaRecorder.state === "recording") {
-        mediaRecorder.stop();
-        btn.innerHTML = "●"; dot.style.display = "none";
-    } else {
-        recordedChunks = [];
-        mediaRecorder = new MediaRecorder(remoteStream, { mimeType: 'video/webm' });
-        mediaRecorder.ondataavailable = e => recordedChunks.push(e.data);
-        mediaRecorder.onstop = () => {
-            const blob = new Blob(recordedChunks, { type: "video/webm" });
-            const a = document.createElement("a");
-            a.href = URL.createObjectURL(blob);
-            a.download = `Rec_ScreenTV_${Date.now()}.webm`;
-            a.click();
-        };
-        mediaRecorder.start();
-        btn.innerHTML = "■"; dot.style.display = "block";
-        log("Gravando sinal...");
-    }
-}
-
-function log(m, c="") { const s = document.getElementById('sysLog'); s.innerHTML = `<span style="color:${c}">> ${m}</span>`; }
 function copyId() { navigator.clipboard.writeText(myId); alert("ID Copiado!"); }
 
 document.querySelectorAll('.tab').forEach(t => {
@@ -237,7 +266,7 @@ document.querySelectorAll('.tab').forEach(t => {
     }
 });
 
-window.onload = setupPersistentID;
+window.onload = setupCloudData;
 </script>
 </body>
 </html>
